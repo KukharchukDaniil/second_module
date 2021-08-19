@@ -3,8 +3,7 @@ package com.epam.esm.entities;
 import java.util.List;
 import java.util.Objects;
 
-public class Certificate implements Entity {
-    private Long id;
+public class Certificate extends Entity {
     private List<Tag> tagList;
     private String name;
     private String description;
@@ -13,14 +12,16 @@ public class Certificate implements Entity {
     private String createDate;
     private String lastUpdateDate;
 
-
-    @Override
-    public Long getId() {
-        return id;
+    public Certificate() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Certificate(String name, String description, int price, int duration, String createDate, String lastUpdateDate) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
     }
 
     public List<Tag> getTagList() {

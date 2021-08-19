@@ -1,4 +1,4 @@
-package com.epam.esm.mappers;
+package com.epam.esm.mapping;
 
 import com.epam.esm.entities.Certificate;
 import org.springframework.jdbc.core.RowMapper;

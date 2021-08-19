@@ -1,7 +1,5 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entities.Entity;
-
 import java.util.List;
 
 public interface Dao<T> {
@@ -9,9 +7,7 @@ public interface Dao<T> {
 
     List<T> getAll();
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
     void update(T entity);
-
-    void save(T entity);
 }

@@ -2,18 +2,8 @@ package com.epam.esm.entities;
 
 import java.util.Objects;
 
-public class Tag implements Entity {
-    private Long id;
+public class Tag extends Entity {
     private String name;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -35,4 +25,5 @@ public class Tag implements Entity {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
 }
