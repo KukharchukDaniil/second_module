@@ -15,40 +15,45 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<List<Ce
     public static final String ID = "id";
     public static final String TAG_ID = "tag_id";
     public static final String TAG_NAME = "tag_name";
-
+    
     @Override
     public List<Certificate> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         List<Certificate> certificateList = new ArrayList<>();
-        List<Tag> tagList = new ArrayList<>();
 
-        CertificateRowMapper certificateRowMapper = new CertificateRowMapper();
-        TagRowMapper tagRowMapper = new TagRowMapper(TAG_ID, TAG_NAME);
         if (resultSet.next()) {
-            Certificate certificate = certificateRowMapper.mapRow(resultSet, 0);
-            certificate.setTagList(tagList);
-            tagList.add(tagRowMapper.mapRow(resultSet, 0));
-            long bufferId = certificate.getId();
-            while (resultSet.next()) {
-                long certificateId = resultSet.getLong(ID);
-                if (certificateId == bufferId) {
-                    Tag tag = tagRowMapper.mapRow(resultSet, 0);
-                    if (tag.getName() != null) {
-                        tagList.add(tagRowMapper.mapRow(resultSet, 0));
-                    }
-                } else {
-                    certificateList.add(certificate);
-                    tagList = new ArrayList<>();
-                    certificate = certificateRowMapper.mapRow(resultSet, 0);
-                    certificate.setTagList(tagList);
-                    Tag tag = tagRowMapper.mapRow(resultSet, 0);
-                    if (tag.getName() != null) {
-                        tagList.add(tagRowMapper.mapRow(resultSet, 0));
-                    }
-                    bufferId = certificate.getId();
-                }
-            }
-            certificateList.add(certificate);
+            processResultSet(resultSet, certificateList);
         }
         return certificateList;
+    }
+
+    private void processResultSet(ResultSet resultSet, List<Certificate> certificateList) throws SQLException {
+        CertificateRowMapper certificateRowMapper = new CertificateRowMapper();
+        Certificate certificate = certificateRowMapper.mapRow(resultSet, 0);
+        List<Tag> tagList = new ArrayList<>();
+        certificate.setTagList(tagList);
+        TagRowMapper tagRowMapper = new TagRowMapper(TAG_ID, TAG_NAME);
+        tagList.add(tagRowMapper.mapRow(resultSet, 0));
+        long bufferId = certificate.getId();
+        while (resultSet.next()) {
+            long certificateId = resultSet.getLong(ID);
+            if (certificateId == bufferId) {
+                addTag(resultSet, tagList, tagRowMapper);
+            } else {
+                certificateList.add(certificate);
+                certificate = certificateRowMapper.mapRow(resultSet, 0);
+                tagList = new ArrayList<>();
+                certificate.setTagList(tagList);
+                addTag(resultSet, tagList, tagRowMapper);
+                bufferId = certificate.getId();
+            }
+        }
+        certificateList.add(certificate);
+    }
+
+    private void addTag(ResultSet resultSet, List<Tag> tagList, TagRowMapper tagRowMapper) throws SQLException {
+        Tag tag = tagRowMapper.mapRow(resultSet, 0);
+        if (tag.getName() != null) {
+            tagList.add(tagRowMapper.mapRow(resultSet, 0));
+        }
     }
 }
