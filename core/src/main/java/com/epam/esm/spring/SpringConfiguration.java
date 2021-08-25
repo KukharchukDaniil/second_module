@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 @PropertySource("classpath:spring_config.properties")
 public class SpringConfiguration {
 
-    private final Environment environment;
+    protected final Environment environment;
 
     public static final String DATA_SOURCE_PROPERTIES_PATH = "spring_config";
     public static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
@@ -40,14 +40,10 @@ public class SpringConfiguration {
         dataSource.setPassword(environment.getProperty(PASSWORD));
         return dataSource;
     }
+
     @Bean
     public JdbcTemplate jdbcTemplate(){
         return new JdbcTemplate(dataSource());
-    }
-
-    @Bean
-    public CertificateDao certificateDao(){
-        return new CertificateDao(jdbcTemplate());
     }
 }
 // remove abstractDAO +

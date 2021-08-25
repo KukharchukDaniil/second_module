@@ -9,15 +9,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan(basePackages = "com.epam.esm")
-public class SpringTestConfiguration {
-
-    private final Environment environment;
+@ComponentScan("com.epam.esm")
+@PropertySource("classpath:spring_config.properties")
+public class SpringTestConfiguration extends SpringConfiguration {
 
     public static final String DATA_SOURCE_PROPERTIES_PATH = "spring_config";
     public static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
@@ -27,24 +28,29 @@ public class SpringTestConfiguration {
 
     @Autowired
     public SpringTestConfiguration(Environment environment) {
-        this.environment = environment;
+        super(environment);
     }
-
 
     @Bean
     public DataSource dataSource() {
+//        return new EmbeddedDatabaseBuilder()
+//                .setType(EmbeddedDatabaseType.H2)
+//                .setScriptEncoding("UTF-8")
+//                .addScript("database.sql")
+//                .addScript("init_db.sql")
+//                .build();
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(environment.getProperty(DRIVER_CLASS_NAME));
+        dataSource.setDriverClassName(environment.getProperty( DRIVER_CLASS_NAME));
         dataSource.setUrl(environment.getProperty(URL));
+        dataSource.setUsername(environment.getProperty(USERNAME));
+        dataSource.setPassword(environment.getProperty(PASSWORD));
         return dataSource;
+
     }
 
+
     @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
-    }
-    @Bean
-    public CertificateDao certificateDao(){
+    public CertificateDao certificateDao() {
         return new CertificateDao(jdbcTemplate());
     }
 }

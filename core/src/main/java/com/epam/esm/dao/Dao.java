@@ -3,7 +3,7 @@ package com.epam.esm.dao;
 import java.util.List;
 
 public interface Dao<T> {
-    void create(T entity);
+    long create(T entity);
 
     List<T> getAll();
 

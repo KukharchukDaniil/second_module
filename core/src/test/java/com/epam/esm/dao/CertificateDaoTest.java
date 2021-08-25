@@ -1,42 +1,39 @@
 package com.epam.esm.dao;
 
+
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.spring.SpringConfiguration;
-import com.epam.esm.spring.SpringTestConfiguration;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.stereotype.Component;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.sql.Date;
 
-@ContextConfiguration(loader= AnnotationConfigContextLoader.class ,classes = SpringTestConfiguration.class)
+import static junit.framework.TestCase.assertEquals;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-class CertificateDaoTest {
-    @Resource
+@ContextConfiguration(classes = {SpringConfiguration.class})
+public class CertificateDaoTest {
+    //TODO:
+    // 1. create tests for Dao
+    // 2. finish TagController
+    // 3. test TagController using Postman
+    // 4. check rest api uri naming
+    // 5. fix date formats in Certificate entity
+    // 6. refactor CertificateResultSetExtractor
+    // 7. check theory
+    @Autowired
     private CertificateDao certificateDao;
-    {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-                SpringTestConfiguration.class
-        );
-        certificateDao =  context.getBean(CertificateDao.class);
-    } //fix
 
     @Test
-    @Transactional
-    @Rollback(true)
     public void testCreate(){
         Certificate certificate = new Certificate("name","description",
-                1,1,"10.02.2002","10.02.2002");
+                1,1, Date.valueOf("2015-03-31").toString(),Date.valueOf("2015-03-31").toString());
         certificateDao.create(certificate);
         System.out.println(certificateDao.getAll());
+        assertEquals("a","a");
     }
 
 }
