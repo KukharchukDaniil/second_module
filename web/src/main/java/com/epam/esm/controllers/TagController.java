@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
     private final TagService tagService;
@@ -33,20 +33,20 @@ public class TagController {
         this.tagService = tagService;
     }
 
-    @GetMapping(value = "/tags")
+    @GetMapping(value = "/")
     public @ResponseBody
     ResponseEntity<List<Tag>> getAllTags() {
         return new ResponseEntity<>(tagService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/tags")
+    @GetMapping("/")
     public ResponseEntity<Tag> getByTagName(@RequestAttribute(value = "name", required = true) String name)
             throws ServiceException {
         Optional<Tag> tagOptional = tagService.getByName(name);
         if (!tagOptional.isPresent()) {
             throw new TagNotFoundException();
         }
-        return new ResponseEntity<>(tagOptional.get(), HttpStatus.OK);
+        return new ResponseEntity<>(tagOptional.get(), HttpStatus.OK); //return valid status
     }
 
     @GetMapping("/tags/{id}")

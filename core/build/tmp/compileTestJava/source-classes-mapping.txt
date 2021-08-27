@@ -1,0 +1,6 @@
+com/epam/esm/dao/TagDaoTest.java
+ com.epam.esm.dao.TagDaoTest
+com/epam/esm/spring/SpringTestConfiguration.java
+ com.epam.esm.spring.SpringTestConfiguration
+com/epam/esm/dao/CertificateDaoTest.java
+ com.epam.esm.dao.CertificateDaoTest

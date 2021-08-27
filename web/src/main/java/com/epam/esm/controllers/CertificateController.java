@@ -1,7 +1,8 @@
 package com.epam.esm.controllers;
 
 import com.epam.esm.entities.Certificate;
-import com.epam.esm.enums.SortingOrder;
+import com.epam.esm.enums.CertificateSortingOrder;
+import com.epam.esm.exceptions.dao.DaoException;
 import com.epam.esm.exceptions.service.ServiceException;
 import com.epam.esm.services.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class CertificateController {
     @GetMapping("/certificates")
     public ResponseEntity<List<Certificate>> getAll(@RequestAttribute(name = "sort", required = true)
                                                             String sortingOrderString) throws ServiceException {
-        SortingOrder sortingOrder = SortingOrder.valueOf(sortingOrderString);
-        return ResponseEntity.ok(certificateService.getAll(sortingOrder));
+        CertificateSortingOrder certificateSortingOrder = CertificateSortingOrder.valueOf(sortingOrderString);
+        return ResponseEntity.ok(certificateService.getAll(certificateSortingOrder));
     }
 
     @GetMapping("/certificates")
@@ -58,7 +59,7 @@ public class CertificateController {
     @PatchMapping("/certificates")
     public ResponseEntity updateCertificate(
             @RequestBody Certificate certificate, @RequestBody String[] tags
-    ) throws ServiceException {
+    ) throws ServiceException, DaoException {
         certificateService.update(certificate, tags);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -73,7 +74,7 @@ public class CertificateController {
 
 
     @GetMapping("/certificates/{id}")
-    public ResponseEntity<Certificate> getById(@PathVariable long id) throws ServiceException {
+    public ResponseEntity<Certificate> getById(@PathVariable long id) throws ServiceException, DaoException {
         return ResponseEntity.ok(certificateService.getById(id));
     }
 

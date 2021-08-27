@@ -1,0 +1,8 @@
+com/epam/esm/CertificateController.java
+ com.epam.esm.CertificateController
+com/epam/esm/TagController.java
+ com.epam.esm.TagController
+com/epam/esm/spring/SpringMvcConfig.java
+ com.epam.esm.spring.SpringMvcConfig
+com/epam/esm/spring/SpringServletInitializer.java
+ com.epam.esm.spring.SpringServletInitializer

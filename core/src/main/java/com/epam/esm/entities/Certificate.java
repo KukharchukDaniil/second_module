@@ -88,12 +88,12 @@ public class Certificate extends Entity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Certificate that = (Certificate) o;
-        return price == that.price && duration == that.duration && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate);
+        return price == that.price && duration == that.duration && Objects.equals(getId(), that.getId()) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate);
+        return Objects.hash(getId(), name, description, price, duration, createDate, lastUpdateDate);
     }
 
     @Override
@@ -108,4 +108,6 @@ public class Certificate extends Entity {
                 ", lastUpdateDate=" + lastUpdateDate +
                 '}';
     }
+
+    
 }

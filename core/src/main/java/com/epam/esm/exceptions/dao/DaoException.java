@@ -2,7 +2,7 @@ package com.epam.esm.exceptions.dao;
 
 public class DaoException extends Exception{
     public DaoException() {
-    }
+    } //TODO: ExceptionHandler
 
     public DaoException(String message) {
         super(message);

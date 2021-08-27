@@ -4,7 +4,7 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.enums.SortingOrder;
+import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.exceptions.dao.DaoException;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
 import com.epam.esm.exceptions.service.ServiceException;
@@ -29,33 +29,19 @@ public class CertificateService {
         this.tagDao = tagDao;
     }
 
-    public Certificate getById(long id) throws ServiceException {
-        try {
-            Optional<Certificate> certificateOptional = certificateDao.getById(id);
-            if (!certificateOptional.isPresent()) {
-                throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID + id);
-            }
-            return certificateOptional.get();
-        } catch (DaoException exception) {
-            throw new ServiceException(exception.getMessage(), exception);
+    public Certificate getById(long id) throws ServiceException, DaoException {
+
+        Optional<Certificate> certificateOptional = certificateDao.getById(id);
+        if (!certificateOptional.isPresent()) {
+            throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID + id);
         }
+        return certificateOptional.get();
+
     }
 
-    public List<Certificate> getAll(SortingOrder order) throws ServiceException {
+    public List<Certificate> getAll(CertificateSortingOrder order) throws ServiceException {
         List<Certificate> certificateList = certificateDao.getAll();
-        switch (order) {
-            case ASC:
-                certificateList.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
-                break;
-            case DESC:
-                certificateList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
-                break;
-            case NONE:
-                break;
-            default:
-                throw new ServiceException("Invalid sorting order");
-        }
-        return certificateList;
+        return order.sort(certificateList);
     }
 
 
@@ -67,17 +53,15 @@ public class CertificateService {
         return certificateDao.getByNamePart(namePart);
     }
 
-    public void update(Certificate certificate, String[] tagNames) throws ServiceException {
-        try {
-            long certificateId = certificate.getId();
-            if (!certificateDao.getById(certificateId).isPresent()) {
-                throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID + certificateId);
-            }
-            processTags(tagNames, certificateId);
-            certificateDao.update(certificate);
-        } catch (DaoException e) {
-            throw new ServiceException(e.getMessage(), e);
+    public void update(Certificate certificate, String[] tagNames) throws ServiceException, DaoException {
+
+        long certificateId = certificate.getId();
+        if (!certificateDao.getById(certificateId).isPresent()) {
+            throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID + certificateId);
         }
+        processTags(tagNames, certificateId);
+        certificateDao.update(certificate);
+
     }
 
     public void delete(long certificateId) throws ServiceException {
