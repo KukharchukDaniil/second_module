@@ -2,7 +2,6 @@ package com.epam.esm.mapping;
 
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -40,7 +39,7 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<List<Ce
         Long bufferId = null;
         List<Tag> tagList = null;
 
-        while (resultSet.next()) {
+        do {
             long certificateId = resultSet.getLong(ID);
             if (bufferId != null && certificateId == bufferId) {
                 addTag(resultSet, tagList, tagRowMapper);
@@ -54,7 +53,7 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<List<Ce
                 addTag(resultSet, tagList, tagRowMapper);
                 bufferId = certificate.getId();
             }
-        }
+        } while (resultSet.next());
         certificateList.add(certificate);
     }
 

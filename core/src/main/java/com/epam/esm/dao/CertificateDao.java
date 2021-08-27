@@ -6,7 +6,6 @@ import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.mapping.CertificateResultSetExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,9 @@ import java.util.Optional;
 public class CertificateDao implements Dao<Certificate> {
 
     public static final String MULTIPLE_RECORDS_WERE_FOUND_BY_ID = "Multiple records were found by id: ";
-    private static final String GET_BY_ID = "SELECT * FROM gift_certificate WHERE id = ?";
+    private static final String GET_BY_ID = "SELECT * FROM gift_certificate LEFT JOIN (" +
+            " SELECT tag.name as tag_name, tag.id as tag_id, certificate_id FROM certificate_tag" +
+            " JOIN tag ON (tag_id = tag.id)) AS new_tag ON (gift_certificate.id = new_tag.certificate_id) WHERE id = ?";
 
     private static final String ATTACHE_CERTIFICATE_TO_TAG = "INSERT INTO certificate_tag(tag_id, certificate_id) VALUES(?,?)";
 
@@ -41,16 +42,6 @@ public class CertificateDao implements Dao<Certificate> {
                     " SELECT tag.name as tag_name, tag.id as tag_id, certificate_id FROM certificate_tag" +
                     " JOIN tag ON (tag_id = tag.id)) AS new_tag ON (gift_certificate.id = new_tag.certificate_id)" +
                     " ORDER BY gift_certificate.id";
-    private static final String GET_ALL_ORDERED_BY_NAME_ASC =
-            " SELECT * FROM gift_certificate LEFT JOIN (" +
-                    " SELECT tag.name as tag_name, tag.id as tag_id, certificate_id FROM certificate_tag" +
-                    " JOIN tag ON (tag_id = tag.id)) AS new_tag ON (gift_certificate.id = new_tag.certificate_id)" +
-                    " ORDER BY gift_certificate.name asc, gift_certificate.id asc";
-    private static final String GET_ALL_ORDERED_BY_NAME_DESC =
-            " SELECT * FROM gift_certificate LEFT JOIN (" +
-                    " SELECT tag.name as tag_name, tag.id as tag_id, certificate_id FROM certificate_tag" +
-                    " JOIN tag ON (tag_id = tag.id)) AS new_tag ON (gift_certificate.id = new_tag.certificate_id)" +
-                    " ORDER BY gift_certificate.name desc, gift_certificate.id desc";
 
     private static final String GET_BY_NAME_PART =
             "SELECT * FROM gift_certificate JOIN (" +
@@ -61,6 +52,7 @@ public class CertificateDao implements Dao<Certificate> {
             "DELETE FROM gift_certificate WHERE id = ?";
     private static final String FIND_CERTIFICATE_TAG =
             "SELECT COUNT(*) FROM certificate_tag WHERE certificate_id = ? AND tag_id = ?";
+
     public static final String TABLE_NAME = "gift_certificate";
 
     private JdbcTemplate jdbcTemplate;
@@ -81,8 +73,8 @@ public class CertificateDao implements Dao<Certificate> {
             preparedStatement.setString(2, entity.getDescription());
             preparedStatement.setString(3, String.valueOf(entity.getPrice()));
             preparedStatement.setString(4, String.valueOf(entity.getDuration()));
-            preparedStatement.setString(5, entity.getCreateDate());
-            preparedStatement.setString(6, entity.getLastUpdateDate());
+            preparedStatement.setString(5, entity.getCreateDate().toString());
+            preparedStatement.setString(6, entity.getLastUpdateDate().toString());
             return preparedStatement;
         }, keyHolder);
 
@@ -117,14 +109,7 @@ public class CertificateDao implements Dao<Certificate> {
         return jdbcTemplate.query(GET_BY_NAME_PART, new CertificateResultSetExtractor(), formattedNamePart);
     }
 
-    public List<Certificate> getAllSortedByNameAsc() {
-        return jdbcTemplate.query(GET_ALL_ORDERED_BY_NAME_ASC, new CertificateResultSetExtractor());
-    }
-
-    public List<Certificate> getAllSortedByNameDesc() {
-        return jdbcTemplate.query(GET_ALL_ORDERED_BY_NAME_DESC, new CertificateResultSetExtractor());
-    }
-
+    @Override
     public Optional<Certificate> getById(long id) throws DaoException {
         List<Certificate> query = jdbcTemplate.query(GET_BY_ID, new CertificateResultSetExtractor(), id);
         if (query.size() > 1) {

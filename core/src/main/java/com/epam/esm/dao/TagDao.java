@@ -50,6 +50,7 @@ public class TagDao implements Dao<Tag> {
         return jdbcTemplate.query(GET_ALL, new TagRowMapper(ID_COLUMN, NAME_COLUMN));
     }
 
+    @Override
     public Optional<Tag> getById(long id) throws MultipleRecordsWereFoundException {
         List<Tag> tagList = jdbcTemplate.query(GET_BY_ID, new TagRowMapper(ID_COLUMN, NAME_COLUMN), id);
         if (tagList.size() > 1) {

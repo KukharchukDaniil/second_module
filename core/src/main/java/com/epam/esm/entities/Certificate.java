@@ -1,5 +1,6 @@
 package com.epam.esm.entities;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,13 +10,15 @@ public class Certificate extends Entity {
     private String description;
     private int price;
     private int duration;
-    private String createDate;
-    private String lastUpdateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
+
 
     public Certificate() {
     }
 
-    public Certificate(String name, String description, int price, int duration, String createDate, String lastUpdateDate) {
+    public Certificate(String name, String description, int price, int duration,
+                       LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -64,19 +67,19 @@ public class Certificate extends Entity {
         this.duration = duration;
     }
 
-    public String getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public String getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(String lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
@@ -93,4 +96,16 @@ public class Certificate extends Entity {
         return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate);
     }
 
+    @Override
+    public String toString() {
+        return "Certificate{" +
+                "tagList=" + tagList +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", duration=" + duration +
+                ", createDate=" + createDate +
+                ", lastUpdateDate=" + lastUpdateDate +
+                '}';
+    }
 }

@@ -3,11 +3,11 @@ package com.epam.esm.mapping;
 import com.epam.esm.entities.Certificate;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 public class CertificateRowMapper implements RowMapper<Certificate> {
@@ -35,12 +35,11 @@ public class CertificateRowMapper implements RowMapper<Certificate> {
         certificate.setPrice(resultSet.getInt(PRICE));
         certificate.setDuration(resultSet.getInt(DURATION));
 
-        Date date = new Date(resultSet.getDate(CREATE_DATE).getTime());
-        String formattedDate = dateFormat.format(date);
-        certificate.setCreateDate(formattedDate);
+        LocalDateTime offsetDateTime = LocalDateTime.parse(resultSet.getString(CREATE_DATE));
+        certificate.setCreateDate(offsetDateTime);
 
-        formattedDate = dateFormat.format(resultSet.getDate(LAST_UPDATE_DATE));
-        certificate.setLastUpdateDate(formattedDate);
+        offsetDateTime = LocalDateTime.parse(resultSet.getString(LAST_UPDATE_DATE));
+        certificate.setLastUpdateDate(offsetDateTime);
         return certificate;
     }
 }

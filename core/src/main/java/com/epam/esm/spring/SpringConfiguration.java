@@ -1,6 +1,5 @@
 package com.epam.esm.spring;
 
-import com.epam.esm.dao.CertificateDao;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,10 +45,3 @@ public class SpringConfiguration {
         return new JdbcTemplate(dataSource());
     }
 }
-// remove abstractDAO +
-// remove Long and Entity +
-// fix mappers !!!!! +
-// remove hard code +
-// rest principals +
-// H2 embedded DB java spring
-// 2 modules +
