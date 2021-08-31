@@ -3,7 +3,7 @@ package com.epam.esm.entities;
 import java.io.Serializable;
 
 public abstract class Entity implements Serializable {
-    protected long id;
+    private long id; // version id
 
     public long getId() {
         return id;
@@ -12,4 +12,12 @@ public abstract class Entity implements Serializable {
     public void setId(long id) {
         this.id = id;
     }
+
+    public Entity() {
+    }
+
+    public Entity(long id) {
+        this.id = id;
+    }
+
 }

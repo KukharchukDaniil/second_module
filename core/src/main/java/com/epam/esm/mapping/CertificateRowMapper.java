@@ -35,11 +35,13 @@ public class CertificateRowMapper implements RowMapper<Certificate> {
         certificate.setPrice(resultSet.getInt(PRICE));
         certificate.setDuration(resultSet.getInt(DURATION));
 
-        LocalDateTime offsetDateTime = LocalDateTime.parse(resultSet.getString(CREATE_DATE));
-        certificate.setCreateDate(offsetDateTime);
+        String dateString = resultSet.getString(CREATE_DATE);
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString);
+        certificate.setCreateDate(localDateTime);
 
-        offsetDateTime = LocalDateTime.parse(resultSet.getString(LAST_UPDATE_DATE));
-        certificate.setLastUpdateDate(offsetDateTime);
+        dateString = resultSet.getString(LAST_UPDATE_DATE);
+        localDateTime = LocalDateTime.parse(dateString);
+        certificate.setLastUpdateDate(localDateTime);
         return certificate;
     }
 }

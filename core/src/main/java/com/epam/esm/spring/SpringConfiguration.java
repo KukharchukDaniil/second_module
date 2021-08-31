@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -18,7 +19,6 @@ public class SpringConfiguration {
 
     protected final Environment environment;
 
-    public static final String DATA_SOURCE_PROPERTIES_PATH = "spring_config";
     public static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
     public static final String URL = "jdbc.url";
     public static final String USERNAME = "jdbc.username";
@@ -31,9 +31,9 @@ public class SpringConfiguration {
 
 
     @Bean
-    public DataSource dataSource(){
+    public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(environment.getProperty( DRIVER_CLASS_NAME));
+        dataSource.setDriverClassName(environment.getProperty(DRIVER_CLASS_NAME));
         dataSource.setUrl(environment.getProperty(URL));
         dataSource.setUsername(environment.getProperty(USERNAME));
         dataSource.setPassword(environment.getProperty(PASSWORD));
@@ -41,7 +41,12 @@ public class SpringConfiguration {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(){
+    public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource());
+    }
+
+    @Bean
+    public DataSourceTransactionManager jdbcTransactionManager() {
+        return new DataSourceTransactionManager(dataSource());
     }
 }

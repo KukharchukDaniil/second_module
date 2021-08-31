@@ -1,6 +1,7 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.entities.Certificate;
+import com.epam.esm.entities.Tag;
 import com.epam.esm.exceptions.dao.DaoException;
 import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.mapping.CertificateResultSetExtractor;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,8 +56,9 @@ public class CertificateDao implements Dao<Certificate> {
             "SELECT COUNT(*) FROM certificate_tag WHERE certificate_id = ? AND tag_id = ?";
 
     public static final String TABLE_NAME = "gift_certificate";
+    public static final String ID = "ID";
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public CertificateDao(JdbcTemplate jdbcTemplate) {
@@ -64,50 +67,33 @@ public class CertificateDao implements Dao<Certificate> {
 
 
     @Override
-    public long create(Certificate entity) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CERTIFICATE, new String[]{"ID"});
-            preparedStatement.setString(1, entity.getName());
-            preparedStatement.setString(2, entity.getDescription());
-            preparedStatement.setString(3, String.valueOf(entity.getPrice()));
-            preparedStatement.setString(4, String.valueOf(entity.getDuration()));
-            preparedStatement.setString(5, entity.getCreateDate().toString());
-            preparedStatement.setString(6, entity.getLastUpdateDate().toString());
-            return preparedStatement;
-        }, keyHolder);
-
-
-        return keyHolder.getKey().longValue();
-    }
-
-    @Override
     public List<Certificate> getAll() {
         return jdbcTemplate.query(GET_ALL, new CertificateResultSetExtractor());
     }
 
-    @Override
-    public void deleteById(long id) {
-        jdbcTemplate.update(DELETE_BY_ID, id);
-    }
 
-    @Override
-    public void update(Certificate entity) {
-        jdbcTemplate.update(UPDATE_CERTIFICATE, entity.getName(), entity.getDescription(),
-                entity.getPrice(), entity.getDuration(), entity.getCreateDate(), entity.getLastUpdateDate(),
-                entity.getId());
-    }
-
-
+    /**
+     * Returns all {@link Certificate} attached to corresponding {@link Tag} in database
+     *
+     * @param tagName
+     * @return certificates list
+     */
     public List<Certificate> getByTagName(String tagName) {
         return jdbcTemplate.query(GET_BY_TAG_NAME, new CertificateResultSetExtractor(), tagName);
     }
 
+
+    /**
+     * Returns list of certificates which contain a namePart in the "name" field
+     *
+     * @param namePart
+     * @return certificates list
+     */
     public List<Certificate> getByNamePart(String namePart) {
         String formattedNamePart = "%" + namePart + "%";
         return jdbcTemplate.query(GET_BY_NAME_PART, new CertificateResultSetExtractor(), formattedNamePart);
     }
+
 
     @Override
     public Optional<Certificate> getById(long id) throws DaoException {
@@ -118,12 +104,59 @@ public class CertificateDao implements Dao<Certificate> {
         return query.stream().findAny();
     }
 
+    @Override
+    public void update(Certificate entity) {
+        LocalDateTime createDate = entity.getCreateDate();
+        LocalDateTime lastUpdateDate = entity.getLastUpdateDate();
+        jdbcTemplate.update(UPDATE_CERTIFICATE, entity.getName(), entity.getDescription(),
+                entity.getPrice(), entity.getDuration(), createDate != null ? createDate.toString() : null,
+                lastUpdateDate != null ? lastUpdateDate.toString() : null,
+                entity.getId());
+    }
+
+
+    @Override
+    public long create(Certificate entity) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CERTIFICATE, new String[]{ID});
+            preparedStatement.setString(1, entity.getName());
+            preparedStatement.setString(2, entity.getDescription());
+            preparedStatement.setInt(3, entity.getPrice());
+            preparedStatement.setInt(4, entity.getDuration());
+            preparedStatement.setString(5, entity.getCreateDate().toString());
+            preparedStatement.setString(6, entity.getLastUpdateDate().toString());
+            return preparedStatement;
+        }, keyHolder);
+
+
+        return keyHolder.getKey().longValue();
+    }
+
+    /**
+     * @param certificateId certificate id of corresponding row in DB
+     * @param tagId         tag id of corresponding row in DB
+     * @return true, if there is a record in "certificate_tag" table with corresponding data. Otherwise returns false.
+     */
     public boolean isAttachedToTag(Long certificateId, Long tagId) {
         Integer counter = jdbcTemplate.queryForObject(FIND_CERTIFICATE_TAG, Integer.class, certificateId, tagId);
         return counter == 1;
     }
 
+
+    /**
+     * Creates a new record in "certificate_tag" table
+     *
+     * @param certificateId identifier of certificate to be inserted
+     * @param tagId         identifier of tag to be inserted
+     */
     public void attachCertificateToTag(long certificateId, long tagId) {
-        jdbcTemplate.update(ATTACHE_CERTIFICATE_TO_TAG, certificateId, tagId);
+        jdbcTemplate.update(ATTACHE_CERTIFICATE_TO_TAG, tagId, certificateId);
+    }
+
+    @Override
+    public void deleteById(long id) {
+        jdbcTemplate.update(DELETE_BY_ID, id);
     }
 }
