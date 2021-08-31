@@ -125,7 +125,7 @@ public class TagController {
      * Handles exception and returns ErrorInfo object
      *
      * @param exception {@link TagAlreadyExistsException exception} to handle
-     * @return ErrorInfo object containing exception info with errorCode = 50002. Response status: 500 Internal Server Error.
+     * @return ErrorInfo object containing exception info with errorCode = 50001. Response status: 500 Internal Server Error.
      */
     @ExceptionHandler(TagAlreadyExistsException.class)
     @ResponseBody
@@ -141,7 +141,7 @@ public class TagController {
      * Handles exception and returns ErrorInfo object
      *
      * @param exception {@link MultipleRecordsWereFoundException exception} to handle
-     * @return ErrorInfo object containing exception info with errorCode = 50002. Response status: 500 Internal Server Error.
+     * @return ErrorInfo object containing exception info with errorCode = 50001. Response status: 500 Internal Server Error.
      */
     @ExceptionHandler({MultipleRecordsWereFoundException.class})
     @ResponseBody
