@@ -1,10 +1,9 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.entities.Certificate;
-import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.dao.DaoException;
 import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.mapping.CertificateResultSetExtractor;
+import com.epam.esm.services.CertificateDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,11 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implements {@link Dao<Certificate>}.
- * <p>Uses {@link JdbcTemplate} for CRUD operations
+ * Implements {@link CertificateDao}.
+ * <p>Uses {@link JdbcTemplate} for implementing {@link CertificateDao} methods operations
  */
 @Component
-public class CertificateDao implements Dao<Certificate> {
+public class CertificateJdbcDao implements CertificateDao {
 
     public static final String MULTIPLE_RECORDS_WERE_FOUND_BY_ID = "Multiple records were found by id: ";
     private static final String GET_BY_ID = "SELECT * FROM gift_certificate LEFT JOIN (" +
@@ -59,13 +58,12 @@ public class CertificateDao implements Dao<Certificate> {
     private static final String FIND_CERTIFICATE_TAG =
             "SELECT COUNT(*) FROM certificate_tag WHERE certificate_id = ? AND tag_id = ?";
 
-    public static final String TABLE_NAME = "gift_certificate";
     public static final String ID = "ID";
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public CertificateDao(JdbcTemplate jdbcTemplate) {
+    public CertificateJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -76,23 +74,12 @@ public class CertificateDao implements Dao<Certificate> {
     }
 
 
-    /**
-     * Returns all {@link Certificate} attached to corresponding {@link Tag} in database
-     *
-     * @param tagName
-     * @return certificates list
-     */
+
     public List<Certificate> getByTagName(String tagName) {
         return jdbcTemplate.query(GET_BY_TAG_NAME, new CertificateResultSetExtractor(), tagName);
     }
 
 
-    /**
-     * Returns list of certificates which contain a namePart in the "name" field
-     *
-     * @param namePart
-     * @return certificates list
-     */
     public List<Certificate> getByNamePart(String namePart) {
         String formattedNamePart = "%" + namePart + "%";
         return jdbcTemplate.query(GET_BY_NAME_PART, new CertificateResultSetExtractor(), formattedNamePart);
@@ -100,7 +87,7 @@ public class CertificateDao implements Dao<Certificate> {
 
 
     @Override
-    public Optional<Certificate> getById(long id) throws DaoException {
+    public Optional<Certificate> getById(long id) {
         List<Certificate> query = jdbcTemplate.query(GET_BY_ID, new CertificateResultSetExtractor(), id);
         if (query.size() > 1) {
             throw new MultipleRecordsWereFoundException(MULTIPLE_RECORDS_WERE_FOUND_BY_ID + id);
@@ -140,23 +127,13 @@ public class CertificateDao implements Dao<Certificate> {
         return keyHolder.getKey().longValue();
     }
 
-    /**
-     * @param certificateId certificate id of corresponding row in DB
-     * @param tagId         {@link Tag} id of corresponding row in DB
-     * @return true, if there is a record in "certificate_tag" table with corresponding data. Otherwise returns false.
-     */
+
     public boolean isAttachedToTag(Long certificateId, Long tagId) {
         Integer counter = jdbcTemplate.queryForObject(FIND_CERTIFICATE_TAG, Integer.class, certificateId, tagId);
         return counter == 1;
     }
 
 
-    /**
-     * Creates a new record in "certificate_tag" table
-     *
-     * @param certificateId identifier of certificate to be inserted
-     * @param tagId         identifier of {@link Tag} to be inserted
-     */
     public void attachCertificateToTag(long certificateId, long tagId) {
         jdbcTemplate.update(ATTACHE_CERTIFICATE_TO_TAG, tagId, certificateId);
     }

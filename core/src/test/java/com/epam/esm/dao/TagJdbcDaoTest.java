@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {SpringTestConfiguration.class})
 @Transactional
-public class TagDaoTest {
+public class TagJdbcDaoTest {
     public static final int FREE_TAG_ID = 1;
     public static final int PRO_TAG_ID = 2;
     public static final int ADVANCED_TAG_ID = 3;
@@ -37,40 +37,40 @@ public class TagDaoTest {
     private static final Tag CREATED_TAG = new Tag(CREATED_TAG_NAME);
 
     @Resource
-    private TagDao tagDao;
+    private TagJdbcDao tagJdbcDao;
 
 
     @Test
     public void getAll_success() {
-        List<Tag> actual = tagDao.getAll();
+        List<Tag> actual = tagJdbcDao.getAll();
         assertEquals(0, compareTagLists(ALL_TAGS_LIST, actual));
     }
 
     @Test
     public void getById_success() {
-        Tag actual = tagDao.getById(FREE_TAG_ID).get();
+        Tag actual = tagJdbcDao.getById(FREE_TAG_ID).get();
         assertThat(actual).usingComparator(new TagComparator()).isEqualTo(TAG_BY_ID);
     }
 
     @Test
     public void getById_fail() {
-        Tag actual = tagDao.getById(PRO_TAG_ID).get();
+        Tag actual = tagJdbcDao.getById(PRO_TAG_ID).get();
         assertNotEquals(TAG_BY_ID, actual);
     }
 
     @Test
     @Rollback
     public void deleteById_success() {
-        tagDao.deleteById(PRO_TAG_ID);
-        Optional<Tag> tagOptional = tagDao.getById(PRO_TAG_ID);
+        tagJdbcDao.deleteById(PRO_TAG_ID);
+        Optional<Tag> tagOptional = tagJdbcDao.getById(PRO_TAG_ID);
         assertFalse(tagOptional.isPresent());
     }
 
     @Test
     @Rollback
     public void create_success() {
-        long tagId = tagDao.create(CREATED_TAG);
-        Optional<Tag> actual = tagDao.getById(tagId);
+        long tagId = tagJdbcDao.create(CREATED_TAG);
+        Optional<Tag> actual = tagJdbcDao.getById(tagId);
         Tag expected = new Tag(tagId, CREATED_TAG_NAME);
         assertThat(actual.get()).usingComparator(new TagComparator()).isEqualTo(expected);
     }
@@ -78,7 +78,7 @@ public class TagDaoTest {
     @Test
     @Rollback
     public void getByName_success() {
-        Optional<Tag> tagOptional = tagDao.getByName(FREE_TAG_NAME);
+        Optional<Tag> tagOptional = tagJdbcDao.getByName(FREE_TAG_NAME);
 
     }
 

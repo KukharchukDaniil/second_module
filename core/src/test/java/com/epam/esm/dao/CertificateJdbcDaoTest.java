@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {SpringTestConfiguration.class})
 @Transactional
-public class CertificateDaoTest {
+public class CertificateJdbcDaoTest {
 
     public static final LocalDateTime DATE = LocalDateTime.parse("2021-08-27T01:06:56.817");
     public static final String CERTIFICATE_ONE_NAME = "certificate_one";
@@ -60,7 +60,7 @@ public class CertificateDaoTest {
     private static final String INVALID_NAME = "DDDDDDDDDDD";
 
     @Autowired
-    private CertificateDao certificateDao;
+    private CertificateJdbcDao certificateJdbcDao;
 
     private static Certificate GET_BY_ID_EXPECTED_CERTIFICATE;
 
@@ -81,7 +81,7 @@ public class CertificateDaoTest {
 
     @Test
     public void getById_validId_success() {
-        Certificate actual = certificateDao.getById(CERTIFICATE_ONE_ID).get();
+        Certificate actual = certificateJdbcDao.getById(CERTIFICATE_ONE_ID).get();
         Assertions.assertThat(actual).usingComparator(new CertificateComparator()).isEqualTo(GET_BY_ID_EXPECTED_CERTIFICATE);
         assertEquals(0, compareTagLists(GET_BY_ID_EXPECTED_CERTIFICATE.getTagList(), actual.getTagList()));
     }
@@ -89,13 +89,13 @@ public class CertificateDaoTest {
     @Test
     public void getById_noEntityWithId_fail() {
         assertThrows(NoSuchElementException.class, () -> {
-            Certificate actual = certificateDao.getById(INVALID_ID).get();
+            Certificate actual = certificateJdbcDao.getById(INVALID_ID).get();
         });
     }
 
     @Test
     public void getAll_success() {
-        List<Certificate> actual = certificateDao.getAll();
+        List<Certificate> actual = certificateJdbcDao.getAll();
 
         assertEquals(ALL_EXPECTED_LIST_SIZE, actual.size());
     }
@@ -108,8 +108,8 @@ public class CertificateDaoTest {
         Certificate expected = CREATE_EXPECTED;
         expected.setId(CREATE_EXPECTED_ID);
         expected.setTagList(new ArrayList<>());
-        certificateDao.create(expected);
-        Optional<Certificate> certificateOptional = certificateDao.getById(CREATE_EXPECTED_ID);
+        certificateJdbcDao.create(expected);
+        Optional<Certificate> certificateOptional = certificateJdbcDao.getById(CREATE_EXPECTED_ID);
 
         Certificate actual = certificateOptional.get();
         Assertions.assertThat(actual).usingComparator(new CertificateComparator()).isEqualTo(expected);
@@ -123,8 +123,8 @@ public class CertificateDaoTest {
         expected.setDuration(CERTIFICATE_ONE_CHANGED_DURATION);
         expected.setTagList(CERTIFICATE_ONE_TAGS);
         expected.setId(CERTIFICATE_ONE_ID);
-        certificateDao.update(expected);
-        Certificate actual = certificateDao.getById(CERTIFICATE_ONE_ID).get();
+        certificateJdbcDao.update(expected);
+        Certificate actual = certificateJdbcDao.getById(CERTIFICATE_ONE_ID).get();
         Assertions.assertThat(actual).usingComparator(new CertificateComparator()).isEqualTo(expected);
         assertEquals(0, compareTagLists(expected.getTagList(), actual.getTagList()));
 
@@ -132,14 +132,14 @@ public class CertificateDaoTest {
 
     @Test
     public void getByTagName_validName_success() {
-        List<Certificate> byTagName = certificateDao.getByTagName(PRO_TAG.getName());
+        List<Certificate> byTagName = certificateJdbcDao.getByTagName(PRO_TAG.getName());
         int actual = byTagName.size();
         assertEquals(GET_BY_TAG_NAME_EXPECTED, actual);
     }
 
     @Test
     public void getByTagName_invalidName_fail() {
-        List<Certificate> byTagName = certificateDao.getByTagName(INVALID_NAME);
+        List<Certificate> byTagName = certificateJdbcDao.getByTagName(INVALID_NAME);
         int actual = byTagName.size();
         assertNotEquals(GET_BY_TAG_NAME_EXPECTED, actual);
     }
@@ -147,7 +147,7 @@ public class CertificateDaoTest {
 
     @Test
     public void getByNamePart_success() {
-        List<Certificate> byTagName = certificateDao.getByNamePart(VALID_NAME_PART);
+        List<Certificate> byTagName = certificateJdbcDao.getByNamePart(VALID_NAME_PART);
         int actual = byTagName.size();
         assertEquals(EXPECTED_GET_BY_NAME_PART, actual);
     }
@@ -155,13 +155,13 @@ public class CertificateDaoTest {
 
     @Test
     public void isAttachedToTag_success() {
-        boolean actual = certificateDao.isAttachedToTag(1L, 1L);
+        boolean actual = certificateJdbcDao.isAttachedToTag(1L, 1L);
         assertTrue(actual);
     }
 
     @Test
     public void isAttachedToTag_fail() {
-        boolean actual = certificateDao.isAttachedToTag(1L, 13L);
+        boolean actual = certificateJdbcDao.isAttachedToTag(1L, 13L);
         assertFalse(actual);
     }
 
@@ -174,8 +174,8 @@ public class CertificateDaoTest {
         List<Tag> tagList = expected.getTagList();
         tagList.add(ADVANCED_TAG);
 
-        certificateDao.attachCertificateToTag(CERTIFICATE_ONE_ID, ADVANCED_TAG.getId());
-        Certificate actual = certificateDao.getById(CERTIFICATE_ONE_ID).get();
+        certificateJdbcDao.attachCertificateToTag(CERTIFICATE_ONE_ID, ADVANCED_TAG.getId());
+        Certificate actual = certificateJdbcDao.getById(CERTIFICATE_ONE_ID).get();
 
         Assertions.assertThat(actual).usingComparator(new CertificateComparator()).isEqualTo(expected);
         assertEquals(0, compareTagLists(expected.getTagList(), actual.getTagList()));
@@ -185,8 +185,8 @@ public class CertificateDaoTest {
     @Test
     @Rollback
     public void deleteById_success() {
-        certificateDao.deleteById(CERTIFICATE_ONE_ID);
-        Optional<Certificate> certificateOptional = certificateDao.getById(CERTIFICATE_ONE_ID);
+        certificateJdbcDao.deleteById(CERTIFICATE_ONE_ID);
+        Optional<Certificate> certificateOptional = certificateJdbcDao.getById(CERTIFICATE_ONE_ID);
         assertFalse(certificateOptional.isPresent());
     }
 
