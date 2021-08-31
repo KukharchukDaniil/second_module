@@ -1,8 +1,7 @@
 package com.epam.esm.services;
 
-import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.service.ServiceException;
 import com.epam.esm.exceptions.service.TagAlreadyExistsException;
 import com.epam.esm.exceptions.service.TagNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Service layer class. Provides methods for CRUD operations on {@link Tag},
- * filtering tags by name
+ * Service layer class. Provides methods for CRUD operations on {@link Tag} using {@link TagDao}
  */
 @Service
 public class TagService {
@@ -24,8 +22,8 @@ public class TagService {
     private final TagDao tagDao;
 
     @Autowired
-    public TagService(TagDao tagDao) {
-        this.tagDao = tagDao;
+    public TagService(TagJdbcDao tagJdbcDao) {
+        this.tagDao = tagJdbcDao;
     }
 
 
@@ -41,9 +39,9 @@ public class TagService {
      * Deletes row with corresponding id. If no row was found, throws an Exception
      *
      * @param id identifier of row to delete
-     * @throws TagNotFoundException
+     * @throws TagNotFoundException if no tags with such ID were found
      */
-    public void deleteById(long id) throws ServiceException {
+    public void deleteById(long id) {
         Optional<Tag> tagOptional = tagDao.getById(id);
         if (!tagOptional.isPresent()) {
             throw new TagNotFoundException(String.format(NO_TAG_WITH_ID, id));
@@ -59,7 +57,7 @@ public class TagService {
      * @return {@link Tag}
      * @throws TagNotFoundException if no tags with such ID were found
      */
-    public Tag getById(long id) throws TagNotFoundException {
+    public Tag getById(long id) {
         Optional<Tag> tagOptional = tagDao.getById(id);
         if (!tagOptional.isPresent()) {
             throw new TagNotFoundException(String.format(NO_TAG_WITH_ID, id));
@@ -72,9 +70,9 @@ public class TagService {
      * Creates new record in DB
      *
      * @param tag {@link Tag tag entity}
-     * @throws ServiceException if tag with this name already exists
+     * @throws TagAlreadyExistsException if tag with this name already exists
      */
-    public void create(Tag tag) throws ServiceException {
+    public void create(Tag tag) {
 
         if (tagDao.getByName(tag.getName()).isPresent()) {
             throw new TagAlreadyExistsException(String.format(TAG_WITH_THIS_NAME_ALREADY_EXISTS, tag.getName()));
@@ -88,9 +86,9 @@ public class TagService {
      *
      * @param name name of the {@link Tag}
      * @return {@link Tag} entity
-     * @throws ServiceException if no tag with this name was found
+     * @throws TagNotFoundException if no tag with this name was found
      */
-    public Tag getByName(String name) throws ServiceException {
+    public Tag getByName(String name) {
         Optional<Tag> tagOptional = tagDao.getByName(name);
         if (!tagOptional.isPresent()) {
             throw new TagNotFoundException(String.format(NO_TAG_WITH_NAME, name));

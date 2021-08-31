@@ -1,7 +1,7 @@
 package com.epam.esm.services;
 
-import com.epam.esm.dao.CertificateDao;
-import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.CertificateJdbcDao;
+import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.enums.CertificateSortingOrder;
@@ -26,12 +26,12 @@ public class CertificateService {
 
     private final CertificateDao certificateDao;
 
-    private final TagDao tagDao;
+    private final TagJdbcDao tagJdbcDao;
 
     @Autowired
-    public CertificateService(CertificateDao certificateDao, TagDao tagDao) {
+    public CertificateService(CertificateJdbcDao certificateDao, TagJdbcDao tagJdbcDao) {
         this.certificateDao = certificateDao;
-        this.tagDao = tagDao;
+        this.tagJdbcDao = tagJdbcDao;
     }
 
 
@@ -40,6 +40,7 @@ public class CertificateService {
      *
      * @param id record identifier
      * @return {@link Certificate}
+     * @throws CertificateNotFoundException if no certificates with specified id were found
      */
     public Certificate getById(long id) {
 
@@ -141,7 +142,7 @@ public class CertificateService {
 
     private void processTags(List<Tag> tags, long certificateId) {
         for (Tag tag : tags) {
-            Optional<Tag> tagOptional = tagDao.getByName(tag.getName());
+            Optional<Tag> tagOptional = tagJdbcDao.getByName(tag.getName());
             Tag checkedTag = getTag(tag.getName(), tagOptional);
             if (!certificateDao.isAttachedToTag(certificateId, checkedTag.getId())) {
                 certificateDao.attachCertificateToTag(certificateId, checkedTag.getId());
@@ -156,7 +157,7 @@ public class CertificateService {
             tag = tagOptional.get();
         } else {
             tag = new Tag(tagName);
-            long tagId = tagDao.create(tag);
+            long tagId = tagJdbcDao.create(tag);
             tag.setId(tagId);
         }
         return tag;

@@ -1,7 +1,7 @@
 package com.epam.esm.services;
 
 import com.epam.esm.comparators.TagComparator;
-import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.exceptions.service.TagNotFoundException;
 import org.assertj.core.api.Assertions;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TagServiceTest {
 
-    private static TagDao tagDao;
+    private static TagJdbcDao tagJdbcDao;
     public static final String NAME = "name";
     public static final long ID = 1;
     private static final Tag TAG = new Tag(NAME);
@@ -33,20 +33,20 @@ class TagServiceTest {
 
     @BeforeEach
     public void init() {
-        tagDao = mock(TagDao.class);
-        tagService = new TagService(tagDao);
+        tagJdbcDao = mock(TagJdbcDao.class);
+        tagService = new TagService(tagJdbcDao);
     }
 
     @Test
     void getAll_success() {
-        when(tagDao.getAll()).thenReturn(Arrays.asList(TAG));
+        when(tagJdbcDao.getAll()).thenReturn(Arrays.asList(TAG));
         List<Tag> actual = tagService.getAll();
         Assertions.assertThat(actual.get(0)).usingComparator(new TagComparator()).isEqualTo(TAG);
     }
 
     @Test
     void getById_whenIdIsValid_success() {
-        when(tagDao.getById(ID)).thenReturn(Optional.of(TAG));
+        when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(TAG));
         Tag actual = tagService.getById(ID);
         Assertions.assertThat(actual).usingComparator(new TagComparator()).isEqualTo(TAG);
     }
@@ -54,7 +54,7 @@ class TagServiceTest {
     @Test
     void getById_whenIdIsInvalid_throwsTagNotFoundException() {
         assertThrows(TagNotFoundException.class, () -> {
-            when(tagDao.getById(ID)).thenReturn(Optional.empty());
+            when(tagJdbcDao.getById(ID)).thenReturn(Optional.empty());
             tagService.getById(ID);
         });
     }
@@ -62,7 +62,7 @@ class TagServiceTest {
     @Test
     void deleteById_whenIdIsValid_success() {
         assertDoesNotThrow(() -> {
-            when(tagDao.getById(ID)).thenReturn(Optional.of(TAG));
+            when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(TAG));
             tagService.deleteById(ID);
         });
     }
@@ -70,7 +70,7 @@ class TagServiceTest {
     @Test
     void deleteById_whenIdIsInvalid_throwsTagNotFoundException() {
         assertThrows(TagNotFoundException.class, () -> {
-            when(tagDao.getById(ID)).thenReturn(Optional.empty());
+            when(tagJdbcDao.getById(ID)).thenReturn(Optional.empty());
             tagService.deleteById(ID);
         });
     }
@@ -78,7 +78,7 @@ class TagServiceTest {
 
     @Test
     void getByName_whenNameIsValid_success() {
-        when(tagDao.getByName(NAME)).thenReturn(Optional.of(TAG));
+        when(tagJdbcDao.getByName(NAME)).thenReturn(Optional.of(TAG));
         Tag actual = tagService.getByName(NAME);
         Assertions.assertThat(actual).usingComparator(new TagComparator()).isEqualTo(TAG);
     }
@@ -86,7 +86,7 @@ class TagServiceTest {
     @Test
     void getByName_whenNameIsInvalid_throwsTagNotFoundException() {
         assertThrows(TagNotFoundException.class, () -> {
-            when(tagDao.getByName(NAME)).thenReturn(Optional.empty());
+            when(tagJdbcDao.getByName(NAME)).thenReturn(Optional.empty());
             tagService.getByName(NAME);
         });
     }

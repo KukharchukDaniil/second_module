@@ -1,27 +1,25 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.dao.DaoException;
 import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.mapping.TagRowMapper;
+import com.epam.esm.services.TagDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Implements {@link Dao< Certificate >}.
+ * Implements {@link TagDao < Certificate >}.
  * <p>Uses {@link JdbcTemplate} for CRD operations
  */
 @Component
-public class TagDao implements Dao<Tag> {
+public class TagJdbcDao implements TagDao {
 
     private static final String REMOVE_TAG_BY_ID = "DELETE FROM tag WHERE id = ?";
     private static final String INSERT_TAG = "INSERT INTO tag(NAME) VALUES(?)";
@@ -38,7 +36,7 @@ public class TagDao implements Dao<Tag> {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public TagDao(JdbcTemplate jdbcTemplate) {
+    public TagJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -72,7 +70,7 @@ public class TagDao implements Dao<Tag> {
         jdbcTemplate.update(REMOVE_TAG_BY_ID, id);
     }
 
-    public Optional<Tag> getByName(String name) throws DaoException {
+    public Optional<Tag> getByName(String name) {
         List<Tag> tagList = jdbcTemplate.query(GET_BY_NAME, new TagRowMapper(ID_COLUMN, NAME_COLUMN), name);
         if (tagList.size() > 1) {
             throw new MultipleRecordsWereFoundException(String.format(MORE_THAN_ONE_RECORD_WERE_FOUND_NAME, name));
@@ -80,8 +78,4 @@ public class TagDao implements Dao<Tag> {
         return tagList.stream().findAny();
     }
 
-    @Override
-    public void update(Tag entity) {
-        throw new NotImplementedException();
-    }
 }
