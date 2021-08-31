@@ -14,6 +14,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service layer class. Provides methods for CRUD operations on {@link Certificate},
+ * filtering certificates by name, name part,
+ * sorting certificates
+ */
 @Service
 public class CertificateService {
 
@@ -62,7 +67,7 @@ public class CertificateService {
     /**
      * Returns all {@link Certificate} entities attached to {@link Tag} with the field tagName
      *
-     * @param tagName name field of the {@link Tag}
+     * @param tagName name of {@link Tag}
      * @return {@link List<Certificate>}
      */
     public List<Certificate> getByTagName(String tagName) {
@@ -72,7 +77,7 @@ public class CertificateService {
     /**
      * Returns list of certificates which contain a namePart in the "name" field
      *
-     * @param namePart
+     * @param namePart name part of {@link Certificate} to return
      * @return {@link List<Certificate>}
      */
     public List<Certificate> getByNamePartSorted(CertificateSortingOrder sortingOrder, String namePart) {
@@ -85,7 +90,7 @@ public class CertificateService {
      * Updates record in data base using data from "certificate".
      * If some new tags passed during update, they will be inserted into "tags" table
      *
-     * @param certificate certificate to update
+     * @param certificate {@link Certificate} object that needs to be updated
      */
     @Transactional
     public void update(Certificate certificate) {
@@ -121,8 +126,7 @@ public class CertificateService {
     /**
      * Creates a new record in DB using entity. Return id field of created row.
      *
-     * @param certificate entity to add
-     * @return id field of recently added row
+     * @param certificate {@link Certificate} object that needs to be added to the DB
      */
     @Transactional
     public void create(Certificate certificate) {

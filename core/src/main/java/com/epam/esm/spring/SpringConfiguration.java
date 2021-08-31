@@ -12,6 +12,9 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
+/**
+ * Provides configuration for Spring container
+ */
 @Configuration
 @ComponentScan("com.epam.esm")
 @PropertySource("classpath:spring_config.properties")

@@ -1,5 +1,8 @@
 package com.epam.esm.exceptions.service;
 
+/**
+ * Service layer exception. Needs to be thrown when no Certificates were found during DB query
+ */
 public class CertificateNotFoundException extends ServiceException {
     public CertificateNotFoundException() {
     }

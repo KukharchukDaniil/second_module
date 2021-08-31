@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service layer class. Provides methods for CRUD operations on {@link Tag},
+ * filtering tags by name
+ */
 @Service
 public class TagService {
 

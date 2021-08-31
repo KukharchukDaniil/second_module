@@ -1,5 +1,8 @@
 package com.epam.esm.exceptions.service;
 
+/**
+ * Base exception for Service layer
+ */
 public class ServiceException extends RuntimeException {
     public ServiceException() {
     }

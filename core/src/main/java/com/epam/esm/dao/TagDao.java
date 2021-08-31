@@ -1,5 +1,6 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.exceptions.dao.DaoException;
 import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
@@ -15,6 +16,10 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implements {@link Dao< Certificate >}.
+ * <p>Uses {@link JdbcTemplate} for CRD operations
+ */
 @Component
 public class TagDao implements Dao<Tag> {
 

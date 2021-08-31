@@ -1,5 +1,8 @@
 package com.epam.esm.entities;
 
+/**
+ * Stores data from "tags" table
+ */
 public class Tag extends Entity {
 
     private static final long serialVersionUID = 1L;
@@ -25,7 +28,6 @@ public class Tag extends Entity {
     public void setName(String name) {
         this.name = name;
     }
-
 
 
 }

@@ -5,6 +5,11 @@ import com.epam.esm.exceptions.dao.DaoException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Provides an interface for DAO layer. Contains six methods for CRUD operations
+ *
+ * @param <T> type of data DAO should work with
+ */
 public interface Dao<T> {
     /**
      * Creates a new record in DB using entity. Return id field of created row.

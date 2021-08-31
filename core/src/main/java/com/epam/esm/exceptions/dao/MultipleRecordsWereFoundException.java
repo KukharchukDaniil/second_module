@@ -1,5 +1,8 @@
 package com.epam.esm.exceptions.dao;
 
+/**
+ * DAO layer exceptions. Needs to be thrown when multiple records were found, but single one was expected
+ */
 public class MultipleRecordsWereFoundException extends DaoException {
     public MultipleRecordsWereFoundException() {
     }

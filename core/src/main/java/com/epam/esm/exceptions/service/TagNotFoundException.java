@@ -1,6 +1,11 @@
 package com.epam.esm.exceptions.service;
 
-public class TagNotFoundException extends ServiceException{
+import com.epam.esm.entities.Tag;
+
+/**
+ * Service layer exception. Needs to be thrown when no {@link Tag} objects were found during DB query
+ */
+public class TagNotFoundException extends ServiceException {
     public TagNotFoundException() {
     }
 

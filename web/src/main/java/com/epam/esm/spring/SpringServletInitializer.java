@@ -2,7 +2,9 @@ package com.epam.esm.spring;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-
+/**
+ * Class for proper Servlet mapping
+ */
 public class SpringServletInitializer extends
         AbstractAnnotationConfigDispatcherServletInitializer {
 

@@ -3,6 +3,10 @@ package com.epam.esm.entities;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
+/**
+ * Stores data from "gift_certificate" table
+ */
 public class Certificate extends Entity {
     private static final long serialVersionUID = 128L;
 

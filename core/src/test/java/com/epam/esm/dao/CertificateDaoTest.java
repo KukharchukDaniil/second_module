@@ -82,7 +82,6 @@ public class CertificateDaoTest {
     @Test
     public void getById_validId_success() {
         Certificate actual = certificateDao.getById(CERTIFICATE_ONE_ID).get();
-        assertEquals(GET_BY_ID_EXPECTED_CERTIFICATE, actual);
         Assertions.assertThat(actual).usingComparator(new CertificateComparator()).isEqualTo(GET_BY_ID_EXPECTED_CERTIFICATE);
         assertEquals(0, compareTagLists(GET_BY_ID_EXPECTED_CERTIFICATE.getTagList(), actual.getTagList()));
     }

@@ -1,5 +1,6 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.comparators.TagComparator;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.spring.SpringTestConfiguration;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -41,13 +43,13 @@ public class TagDaoTest {
     @Test
     public void getAll_success() {
         List<Tag> actual = tagDao.getAll();
-        assertEquals(ALL_TAGS_LIST, actual);
+        assertEquals(0, compareTagLists(ALL_TAGS_LIST, actual));
     }
 
     @Test
     public void getById_success() {
         Tag actual = tagDao.getById(FREE_TAG_ID).get();
-        assertEquals(TAG_BY_ID, actual);
+        assertThat(actual).usingComparator(new TagComparator()).isEqualTo(TAG_BY_ID);
     }
 
     @Test
@@ -70,7 +72,7 @@ public class TagDaoTest {
         long tagId = tagDao.create(CREATED_TAG);
         Optional<Tag> actual = tagDao.getById(tagId);
         Tag expected = new Tag(tagId, CREATED_TAG_NAME);
-        assertEquals(expected, actual.get());
+        assertThat(actual.get()).usingComparator(new TagComparator()).isEqualTo(expected);
     }
 
     @Test
@@ -80,5 +82,25 @@ public class TagDaoTest {
 
     }
 
+    private int compareTagLists(List<Tag> o1, List<Tag> o2) {
+        int result = 0;
+        if (o1 == null || o2 == null) {
+            if (o1 == o2) {
+                result = 0;
+            } else {
+                result = 1;
+            }
+        } else {
+            if (o1.size() == o2.size()) {
+                for (int i = 0; i < o1.size(); i++) {
+                    Tag o1tag = o1.get(i);
+                    Tag o2Tag = o2.get(i);
+                    result += o1tag.getName().equals(o2Tag.getName())
+                            && o1tag.getId() == o2Tag.getId() ? 0 : 1;
+                }
+            }
+        }
+        return result;
+    }
 
 }

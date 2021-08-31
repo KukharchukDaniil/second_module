@@ -5,15 +5,13 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.TimeZone;
 
+/**
+ * Maps {@link Certificate} from current row in {@link ResultSet}
+ */
 public class CertificateRowMapper implements RowMapper<Certificate> {
 
-    public static final String UTC = "UTC";
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
@@ -24,9 +22,6 @@ public class CertificateRowMapper implements RowMapper<Certificate> {
 
     @Override
     public Certificate mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        TimeZone timeZone = TimeZone.getTimeZone(UTC);
-        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        dateFormat.setTimeZone(timeZone);
 
         Certificate certificate = new Certificate();
         certificate.setId(resultSet.getLong(ID));

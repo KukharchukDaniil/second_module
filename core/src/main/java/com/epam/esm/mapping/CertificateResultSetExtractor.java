@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Extracts Certificate objects from ResultSet. Fills the tagList field.
+ */
 public class CertificateResultSetExtractor implements ResultSetExtractor<List<Certificate>> {
 
     public static final String ID = "id";

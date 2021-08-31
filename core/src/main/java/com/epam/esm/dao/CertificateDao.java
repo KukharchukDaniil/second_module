@@ -16,6 +16,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implements {@link Dao<Certificate>}.
+ * <p>Uses {@link JdbcTemplate} for CRUD operations
+ */
 @Component
 public class CertificateDao implements Dao<Certificate> {
 
@@ -125,8 +129,10 @@ public class CertificateDao implements Dao<Certificate> {
             preparedStatement.setString(2, entity.getDescription());
             preparedStatement.setInt(3, entity.getPrice());
             preparedStatement.setInt(4, entity.getDuration());
-            preparedStatement.setString(5, entity.getCreateDate().toString());
-            preparedStatement.setString(6, entity.getLastUpdateDate().toString());
+            preparedStatement.setString(5, entity.getCreateDate() != null ?
+                    entity.getCreateDate().toString() : null);
+            preparedStatement.setString(6, entity.getLastUpdateDate() != null ?
+                    entity.getLastUpdateDate().toString() : null);
             return preparedStatement;
         }, keyHolder);
 
@@ -136,7 +142,7 @@ public class CertificateDao implements Dao<Certificate> {
 
     /**
      * @param certificateId certificate id of corresponding row in DB
-     * @param tagId         tag id of corresponding row in DB
+     * @param tagId         {@link Tag} id of corresponding row in DB
      * @return true, if there is a record in "certificate_tag" table with corresponding data. Otherwise returns false.
      */
     public boolean isAttachedToTag(Long certificateId, Long tagId) {
@@ -149,7 +155,7 @@ public class CertificateDao implements Dao<Certificate> {
      * Creates a new record in "certificate_tag" table
      *
      * @param certificateId identifier of certificate to be inserted
-     * @param tagId         identifier of tag to be inserted
+     * @param tagId         identifier of {@link Tag} to be inserted
      */
     public void attachCertificateToTag(long certificateId, long tagId) {
         jdbcTemplate.update(ATTACHE_CERTIFICATE_TO_TAG, tagId, certificateId);
