@@ -4,10 +4,12 @@ import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.errors.ErrorInfo;
+import com.epam.esm.errors.ValidationError;
 import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
 import com.epam.esm.exceptions.service.ServiceException;
 import com.epam.esm.services.CertificateService;
+import com.epam.esm.validation.CertificateValidator;
 import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Provides REST API functionality for {@link Certificate}
@@ -36,16 +39,18 @@ import java.util.Locale;
 @RequestMapping(value = "/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
 
-    private static final int MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = 50002;
-    private static final int CERTIFICATE_NOT_FOUND_ERROR_CODE = 40402;
-    public static final String CREATED = "Created";
-    public static final String ERROR_MESSAGE = "can't process both tag and name params";
-    public static final int ERROR_CODE = 400;
+    private static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50002";
+    private static final String CERTIFICATE_NOT_FOUND_ERROR_CODE = "40402";
+    public static final String ERROR_MESSAGE = "Can't process both tag and name params";
+    private static final String PARAMETERS_ERROR_CODE = "parameters-02";
+
     private final CertificateService certificateService;
+    private final CertificateValidator certificateValidator;
 
     @Autowired
-    public CertificateController(CertificateService certificateService) {
+    public CertificateController(CertificateService certificateService, CertificateValidator certificateValidator) {
         this.certificateService = certificateService;
+        this.certificateValidator = certificateValidator;
     }
 
     /**
@@ -75,7 +80,7 @@ public class CertificateController {
             @RequestParam(value = "name", required = false) String namePart,
             @RequestParam(value = "tag", required = false) String tagName) {
         if (namePart != null && tagName != null) {
-            return new ResponseEntity(new ErrorInfo(HttpStatus.BAD_REQUEST, ERROR_CODE, ERROR_MESSAGE), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, ERROR_MESSAGE), HttpStatus.BAD_REQUEST);
         }
         List<Certificate> resultList;
         CertificateSortingOrder certificateSortingOrder = getCertificateSortingOrder(sortingOrderString);
@@ -94,7 +99,6 @@ public class CertificateController {
                 : CertificateSortingOrder.NONE;
     }
 
-
     /**
      * Creates new record in data source with corresponding info
      * <p> POST /web/certificates
@@ -107,10 +111,13 @@ public class CertificateController {
     public ResponseEntity createCertificate(
             @RequestBody Certificate certificate
     ) {
+        Optional<ValidationError> validationErrorOptional = certificateValidator.validateCertificate(certificate);
+        if (validationErrorOptional.isPresent()) {
+            return new ResponseEntity(validationErrorOptional.get(), HttpStatus.BAD_REQUEST);
+        }
         certificateService.create(certificate);
-        return new ResponseEntity(CREATED, HttpStatus.CREATED);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
-
 
     /**
      * Updates existing record in data source with corresponding info
@@ -125,8 +132,12 @@ public class CertificateController {
     public ResponseEntity updateCertificate(
             @RequestBody Certificate certificate
     ) {
+        Optional<ValidationError> validationErrorOptional = certificateValidator.validateCertificate(certificate);
+        if (validationErrorOptional.isPresent()) {
+            return new ResponseEntity(validationErrorOptional.get(), HttpStatus.BAD_REQUEST);
+        }
         certificateService.update(certificate);
-        return new ResponseEntity(CREATED, HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -142,7 +153,7 @@ public class CertificateController {
             @PathVariable long id
     ) throws ServiceException {
         certificateService.delete(id);
-        return new ResponseEntity(CREATED, HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -179,7 +190,7 @@ public class CertificateController {
      * Handles exception and returns ErrorInfo object
      *
      * @param exception {@link CertificateNotFoundException exception} to handle
-     * @return ErrorInfo object containing exception info with errorCode = 40002. Response status: 404 Not Found.
+     * @return ErrorInfo object containing exception info with errorCode = 40402. Response status: 404 Not Found.
      */
     @ExceptionHandler(CertificateNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -191,5 +202,6 @@ public class CertificateController {
                 exception.getLocalizedMessage()
         );
     }
-
+    //validation
+    //409
 }

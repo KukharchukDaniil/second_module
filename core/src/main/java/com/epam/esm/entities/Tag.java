@@ -44,4 +44,11 @@ public class Tag extends Entity {
     public int hashCode() {
         return Objects.hash(super.hashCode(), name);
     }
+
+    @Override
+    public String toString() {
+        return "Tag{" + getId() +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

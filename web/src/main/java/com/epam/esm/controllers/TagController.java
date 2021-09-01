@@ -32,8 +32,8 @@ import java.util.List;
 @RequestMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
-    public static final int TAG_NOT_FOUND_ERROR_CODE = 40401;
-    public static final int MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = 50001;
+    public static final String TAG_NOT_FOUND_ERROR_CODE = "40401";
+    public static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50001";
     private static final String CREATED = "Created";
     private final TagService tagService;
 
@@ -59,7 +59,6 @@ public class TagController {
         }
         return responseEntity;
     }
-
 
     /**
      * Returns single {@link Tag} object with corresponding id

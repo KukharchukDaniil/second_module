@@ -26,14 +26,12 @@ public class TagService {
         this.tagDao = tagJdbcDao;
     }
 
-
     /**
      * @return {@link List<Tag>} which contains all Tags in DB
      */
     public List<Tag> getAll() {
         return tagDao.getAll();
     }
-
 
     /**
      * Deletes row with corresponding id. If no row was found, throws an Exception
@@ -49,7 +47,6 @@ public class TagService {
         tagDao.deleteById(id);
     }
 
-
     /**
      * Returns entity from DB with corresponding ID
      *
@@ -64,7 +61,6 @@ public class TagService {
         return tagOptional.get();
     }
 
-
     /**
      * Creates new record in DB
      *
@@ -77,7 +73,6 @@ public class TagService {
         }
         tagDao.create(tag);
     }
-
 
     /**
      * Returns Tag with corresponding name

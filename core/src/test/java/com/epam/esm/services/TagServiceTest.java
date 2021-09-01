@@ -26,9 +26,7 @@ class TagServiceTest {
     public static final long ID = 1;
     private static Tag tag;
 
-
     private static TagService tagService;
-
 
     @BeforeEach
     public void init() {
@@ -75,7 +73,6 @@ class TagServiceTest {
             tagService.deleteById(ID);
         });
     }
-
 
     @Test
     void getByName_whenNameIsValid_success() {

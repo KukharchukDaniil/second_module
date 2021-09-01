@@ -5,6 +5,7 @@ import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,22 +24,19 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceTest {
+
+    private static LocalDateTime date;
     public static final int ID = 0;
-    public static final Certificate FIRST_CERTIFICATE = new Certificate(
-            "a_name", "description", 1, 1, LocalDateTime.now(), LocalDateTime.now()
-    );
-    public static final Certificate SECOND_CERTIFICATE = new Certificate(
-            "b_name", "description", 1, 1, LocalDateTime.now(), LocalDateTime.now()
-    );
-    public static final Certificate THIRD_CERTIFICATE = new Certificate(
-            "c_name", "description", 1, 1, LocalDateTime.now(), LocalDateTime.now()
-    );
-    public static final List<Certificate> CERTIFICATE_LIST =
-            Arrays.asList(
-                    FIRST_CERTIFICATE,
-                    SECOND_CERTIFICATE,
-                    THIRD_CERTIFICATE
-            );
+    public static final String C_NAME = "c_name";
+    public static final String DESCRIPTION = "description";
+    public static final String B_NAME = "b_name";
+    public static final String A_NAME = "a_name";
+    public static final int PRICE = 1;
+    public static final int DURATION = 1;
+    public static Certificate firstCertificate;
+    public static Certificate secondCertificate;
+    public static Certificate thirdCertificate;
+    public static List<Certificate> certificateList;
     public static final String NAME = "name";
 
     private static CertificateJdbcDao certificateJdbcDao;
@@ -46,9 +44,32 @@ class CertificateServiceTest {
 
     private static CertificateService certificateService;
 
+    @BeforeAll
+    public static void initClass() {
+        date = LocalDateTime.now();
+
+        thirdCertificate = new Certificate(
+                C_NAME, DESCRIPTION, PRICE, DURATION, date, date
+        );
+
+        secondCertificate = new Certificate(
+                B_NAME, DESCRIPTION, PRICE, DURATION, date, date
+        );
+
+        firstCertificate = new Certificate(
+                A_NAME, DESCRIPTION, PRICE, DURATION, date, date
+        );
+
+        certificateList =
+                Arrays.asList(
+                        firstCertificate,
+                        secondCertificate,
+                        thirdCertificate
+                );
+    }
 
     @BeforeEach
-    public void init() {
+    public void initMethod() {
         certificateJdbcDao = mock(CertificateJdbcDao.class);
         tagJdbcDao = mock(TagJdbcDao.class);
         certificateService = new CertificateService(certificateJdbcDao, tagJdbcDao);
@@ -56,9 +77,9 @@ class CertificateServiceTest {
 
     @Test
     void getById_whenIdIsValid_success() {
-        when(certificateJdbcDao.getById(ID)).thenReturn(Optional.of(FIRST_CERTIFICATE));
+        when(certificateJdbcDao.getById(ID)).thenReturn(Optional.of(firstCertificate));
         Certificate actual = certificateService.getById(ID);
-        assertEquals(FIRST_CERTIFICATE, actual);
+        assertEquals(firstCertificate, actual);
 
     }
 
@@ -74,7 +95,7 @@ class CertificateServiceTest {
 
     @Test
     void getAll_success() {
-        List<Certificate> expected = Arrays.asList(FIRST_CERTIFICATE);
+        List<Certificate> expected = Arrays.asList(firstCertificate);
         when(certificateJdbcDao.getAll()).thenReturn(expected);
         List<Certificate> actual = certificateService.getAll(CertificateSortingOrder.NONE);
         assertEquals(expected, actual);
@@ -89,7 +110,7 @@ class CertificateServiceTest {
 
     @Test
     void getByTagName_success() {
-        List<Certificate> expected = Arrays.asList(FIRST_CERTIFICATE);
+        List<Certificate> expected = Arrays.asList(firstCertificate);
         when(certificateJdbcDao.getByTagName(NAME)).thenReturn(expected);
         List<Certificate> actual = certificateService.getByTagName(NAME);
         assertEquals(expected, actual);
@@ -97,32 +118,32 @@ class CertificateServiceTest {
 
     @Test
     void getByNamePartSorted_whenSortingOrderIsAsc_success() {
-        List<Certificate> expected = Arrays.asList(FIRST_CERTIFICATE, SECOND_CERTIFICATE, THIRD_CERTIFICATE);
-        when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(CERTIFICATE_LIST);
+        List<Certificate> expected = Arrays.asList(firstCertificate, secondCertificate, thirdCertificate);
+        when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(certificateList);
         List<Certificate> actual = certificateService.getByNamePartSorted(CertificateSortingOrder.ASC, NAME);
         assertEquals(expected, actual);
     }
 
     @Test
     void getByNamePartSorted_whenSortingOrderIsDesc_success() {
-        List<Certificate> expected = Arrays.asList(THIRD_CERTIFICATE, SECOND_CERTIFICATE, FIRST_CERTIFICATE);
-        when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(CERTIFICATE_LIST);
+        List<Certificate> expected = Arrays.asList(thirdCertificate, secondCertificate, firstCertificate);
+        when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(certificateList);
         List<Certificate> actual = certificateService.getByNamePartSorted(CertificateSortingOrder.DESC, NAME);
         assertEquals(expected, actual);
     }
 
     @Test
     void getByNamePartSorted_whenSortingOrderIsNone_success() {
-        when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(CERTIFICATE_LIST);
+        when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(certificateList);
         List<Certificate> actual = certificateService.getByNamePartSorted(CertificateSortingOrder.NONE, NAME);
-        assertEquals(CERTIFICATE_LIST, actual);
+        assertEquals(certificateList, actual);
     }
 
     @Test
     void update_whenIdIsValid_success() {
         assertDoesNotThrow(() -> {
-            when(certificateJdbcDao.getById(ID)).thenReturn(Optional.of(FIRST_CERTIFICATE));
-            certificateService.update(FIRST_CERTIFICATE);
+            when(certificateJdbcDao.getById(ID)).thenReturn(Optional.of(firstCertificate));
+            certificateService.update(firstCertificate);
         });
     }
 
@@ -130,7 +151,7 @@ class CertificateServiceTest {
     void update_whenIdIsInvalid_throwsCertificateNotFoundException() {
         assertThrows(CertificateNotFoundException.class, () -> {
             when(certificateJdbcDao.getById(ID)).thenReturn(Optional.empty());
-            certificateService.update(FIRST_CERTIFICATE);
+            certificateService.update(firstCertificate);
         });
     }
 

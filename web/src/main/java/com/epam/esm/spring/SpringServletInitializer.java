@@ -8,7 +8,6 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 public class SpringServletInitializer extends
         AbstractAnnotationConfigDispatcherServletInitializer {
 
-
     @Override
     protected Class<?>[] getServletConfigClasses() {
         return new Class[]{SpringMvcConfig.class};

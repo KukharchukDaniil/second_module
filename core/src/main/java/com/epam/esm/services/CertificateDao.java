@@ -31,7 +31,6 @@ public interface CertificateDao {
      */
     List<Certificate> getByNamePart(String namePart);
 
-
     /**
      * Returns Optional of single {@link Certificate} object.
      *
@@ -60,7 +59,7 @@ public interface CertificateDao {
      * @return true, if there is a record in "certificate_tag" table with corresponding data. Otherwise returns false.
      */
 
-    boolean isAttachedToTag(Long certificateId, Long tagId);
+    boolean isAttachedToTag(long certificateId, long tagId);
 
     /**
      * Attaches certificate to tag in a data source
@@ -76,4 +75,12 @@ public interface CertificateDao {
      * @param id identifier of the record
      */
     void deleteById(long id);
+
+    /**
+     * Deletes all redundant tags from certificate.
+     *
+     * @param certificateId id of certificate to process
+     * @param tagIds        ids of tags that should be saved
+     */
+    void detachTagsFromCertificateExceptPresented(long certificateId, Long[] tagIds);
 }

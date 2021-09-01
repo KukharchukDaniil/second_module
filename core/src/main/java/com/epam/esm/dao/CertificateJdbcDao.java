@@ -27,7 +27,9 @@ public class CertificateJdbcDao implements CertificateDao {
             " SELECT tag.name as tag_name, tag.id as tag_id, certificate_id FROM certificate_tag" +
             " JOIN tag ON (tag_id = tag.id)) AS new_tag ON (gift_certificate.id = new_tag.certificate_id) WHERE id = ?";
 
-    private static final String ATTACHE_CERTIFICATE_TO_TAG = "INSERT INTO certificate_tag(tag_id, certificate_id) VALUES(?,?)";
+    private static final String ATTACH_CERTIFICATE_TO_TAG = "INSERT INTO certificate_tag(tag_id, certificate_id) VALUES(?,?)";
+    private static final String DETACH_CERTIFICATE_FROM_TAG = "DELETE FROM certificate_tag WHERE certificate_id = ? and " +
+            "tag_id not in (?)";
 
     private static final String UPDATE_CERTIFICATE =
             "UPDATE gift_certificate SET name = coalesce(?,name), description = coalesce(?,description)," +
@@ -67,24 +69,19 @@ public class CertificateJdbcDao implements CertificateDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
     public List<Certificate> getAll() {
         return jdbcTemplate.query(GET_ALL, new CertificateResultSetExtractor());
     }
 
-
-
     public List<Certificate> getByTagName(String tagName) {
         return jdbcTemplate.query(GET_BY_TAG_NAME, new CertificateResultSetExtractor(), tagName);
     }
-
 
     public List<Certificate> getByNamePart(String namePart) {
         String formattedNamePart = "%" + namePart + "%";
         return jdbcTemplate.query(GET_BY_NAME_PART, new CertificateResultSetExtractor(), formattedNamePart);
     }
-
 
     @Override
     public Optional<Certificate> getById(long id) {
@@ -104,7 +101,6 @@ public class CertificateJdbcDao implements CertificateDao {
                 lastUpdateDate != null ? lastUpdateDate.toString() : null,
                 entity.getId());
     }
-
 
     @Override
     public long create(Certificate entity) {
@@ -127,15 +123,18 @@ public class CertificateJdbcDao implements CertificateDao {
         return keyHolder.getKey().longValue();
     }
 
-
-    public boolean isAttachedToTag(Long certificateId, Long tagId) {
+    public boolean isAttachedToTag(long certificateId, long tagId) {
         Integer counter = jdbcTemplate.queryForObject(FIND_CERTIFICATE_TAG, Integer.class, certificateId, tagId);
         return counter == 1;
     }
 
-
     public void attachCertificateToTag(long certificateId, long tagId) {
-        jdbcTemplate.update(ATTACHE_CERTIFICATE_TO_TAG, tagId, certificateId);
+        jdbcTemplate.update(ATTACH_CERTIFICATE_TO_TAG, tagId, certificateId);
+    }
+
+    public void detachTagsFromCertificateExceptPresented(long certificateId, Long[] tagIds) {
+
+        jdbcTemplate.update(DETACH_CERTIFICATE_FROM_TAG, certificateId, tagIds);
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,6 @@ public class CertificateService {
         this.tagJdbcDao = tagJdbcDao;
     }
 
-
     /**
      * Returns {@link Certificate} from data base. If no records were found, throws {@link CertificateNotFoundException}
      *
@@ -52,7 +52,6 @@ public class CertificateService {
 
     }
 
-
     /**
      * Returns all {@link Certificate} records from data base in some {@link CertificateSortingOrder order}
      *
@@ -63,7 +62,6 @@ public class CertificateService {
         List<Certificate> certificateList = certificateDao.getAll();
         return order.sort(certificateList);
     }
-
 
     /**
      * Returns all {@link Certificate} entities attached to {@link Tag} with the field tagName
@@ -86,7 +84,6 @@ public class CertificateService {
         return sortingOrder.sort(certificates);
     }
 
-
     /**
      * Updates record in data base using data from "certificate".
      * If some new tags passed during update, they will be inserted into "tags" table
@@ -107,7 +104,6 @@ public class CertificateService {
         certificate.setLastUpdateDate(LocalDateTime.now());
         certificateDao.update(certificate);
     }
-
 
     /**
      * Deletes certificate row with corresponding id. If no rows with this id value stored in DB, throws
@@ -131,8 +127,13 @@ public class CertificateService {
      */
     @Transactional
     public void create(Certificate certificate) {
-        certificate.setCreateDate(LocalDateTime.now());
-        certificate.setLastUpdateDate(LocalDateTime.now());
+        if (certificate.getCreateDate() == null) {
+            certificate.setCreateDate(LocalDateTime.now());
+        }
+        if (certificate.getLastUpdateDate() == null) {
+            certificate.setLastUpdateDate(LocalDateTime.now());
+        }
+
         List<Tag> tags = certificate.getTagList();
         long certificateId = certificateDao.create(certificate);
         if (tags != null) {
@@ -141,6 +142,7 @@ public class CertificateService {
     }
 
     private void processTags(List<Tag> tags, long certificateId) {
+        deleteRedundantTags(tags, certificateId);
         for (Tag tag : tags) {
             Optional<Tag> tagOptional = tagJdbcDao.getByName(tag.getName());
             Tag checkedTag = getTag(tag.getName(), tagOptional);
@@ -148,6 +150,14 @@ public class CertificateService {
                 certificateDao.attachCertificateToTag(certificateId, checkedTag.getId());
             }
         }
+    }
+
+    private void deleteRedundantTags(List<Tag> tags, long certificateId) {
+        List<Long> idList = new ArrayList<>();
+        tags.forEach((Tag tag) -> {
+            idList.add(tag.getId());
+        });
+        certificateDao.detachTagsFromCertificateExceptPresented(certificateId, (Long[]) idList.toArray());
     }
 
     private Tag getTag(String tagName, Optional<Tag> tagOptional) {

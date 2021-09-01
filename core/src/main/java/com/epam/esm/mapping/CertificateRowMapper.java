@@ -31,11 +31,11 @@ public class CertificateRowMapper implements RowMapper<Certificate> {
         certificate.setDuration(resultSet.getInt(DURATION));
 
         String dateString = resultSet.getString(CREATE_DATE);
-        LocalDateTime localDateTime = LocalDateTime.parse(dateString);
+        LocalDateTime localDateTime = dateString == null ? null : LocalDateTime.parse(dateString);
         certificate.setCreateDate(localDateTime);
 
         dateString = resultSet.getString(LAST_UPDATE_DATE);
-        localDateTime = LocalDateTime.parse(dateString);
+        localDateTime = dateString == null ? null : LocalDateTime.parse(dateString);
         certificate.setLastUpdateDate(localDateTime);
         return certificate;
     }

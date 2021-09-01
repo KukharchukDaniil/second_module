@@ -32,7 +32,6 @@ public class SpringConfiguration {
         this.environment = environment;
     }
 
-
     @Bean
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();

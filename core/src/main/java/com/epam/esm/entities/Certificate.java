@@ -109,4 +109,16 @@ public class Certificate extends Entity {
         return Objects.hash(super.hashCode(), tagList, name, description, price, duration, createDate, lastUpdateDate);
     }
 
+    @Override
+    public String toString() {
+        return "Certificate{" +
+                "tagList=" + tagList +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", duration=" + duration +
+                ", createDate=" + createDate +
+                ", lastUpdateDate=" + lastUpdateDate +
+                '}';
+    }
 }

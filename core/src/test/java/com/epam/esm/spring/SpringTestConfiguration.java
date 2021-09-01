@@ -19,7 +19,6 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class SpringTestConfiguration extends SpringConfiguration {
 
-    public static final String DATA_SOURCE_PROPERTIES_PATH = "spring_config";
     public static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
     public static final String URL = "jdbc.url";
     public static final String USERNAME = "jdbc.username";
@@ -45,7 +44,6 @@ public class SpringTestConfiguration extends SpringConfiguration {
     public DataSourceTransactionManager jdbcTransactionManager() {
         return new DataSourceTransactionManager(dataSource());
     }
-
 
     @Bean
     public CertificateJdbcDao certificateDao() {

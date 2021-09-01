@@ -5,7 +5,6 @@ import com.epam.esm.entities.Tag;
 import java.util.List;
 import java.util.Optional;
 
-
 public interface TagDao {
     /**
      * Creates a new record in DB using entity. Return id field of created row.

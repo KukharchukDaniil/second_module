@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
  */
 public class ErrorInfo {
     private final HttpStatus status;
-    private final int errorCode;
+    private final String errorCode;
     private final String errorMessage;
 
-    public ErrorInfo(HttpStatus status, int errorCode, String errorMessage) {
+    public ErrorInfo(HttpStatus status, String errorCode, String errorMessage) {
         this.status = status;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
@@ -21,11 +21,12 @@ public class ErrorInfo {
         return status;
     }
 
-    public int getErrorCode() {
+    public String getErrorCode() {
         return errorCode;
     }
 
     public String getErrorMessage() {
         return errorMessage;
     }
+
 }
