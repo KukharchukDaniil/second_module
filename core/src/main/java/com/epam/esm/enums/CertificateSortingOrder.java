@@ -17,14 +17,18 @@ public enum CertificateSortingOrder {
     ASC {
         @Override
         public List<Certificate> sort(List<Certificate> certificateList) {
-            certificateList.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+            if (certificateList != null) {
+                certificateList.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+            }
             return certificateList;
         }
     },
     DESC {
         @Override
         public List<Certificate> sort(List<Certificate> certificateList) {
-            certificateList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
+            if (certificateList != null) {
+                certificateList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
+            }
             return certificateList;
         }
     };

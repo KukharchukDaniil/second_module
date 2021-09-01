@@ -1,10 +1,8 @@
 package com.epam.esm.services;
 
-import com.epam.esm.comparators.TagComparator;
 import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.exceptions.service.TagNotFoundException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,7 +24,7 @@ class TagServiceTest {
     private static TagJdbcDao tagJdbcDao;
     public static final String NAME = "name";
     public static final long ID = 1;
-    private static final Tag TAG = new Tag(NAME);
+    private static Tag tag;
 
 
     private static TagService tagService;
@@ -35,20 +34,22 @@ class TagServiceTest {
     public void init() {
         tagJdbcDao = mock(TagJdbcDao.class);
         tagService = new TagService(tagJdbcDao);
+        tag = new Tag(NAME);
     }
 
     @Test
     void getAll_success() {
-        when(tagJdbcDao.getAll()).thenReturn(Arrays.asList(TAG));
+        List<Tag> tagList = Arrays.asList(tag);
+        when(tagJdbcDao.getAll()).thenReturn(tagList);
         List<Tag> actual = tagService.getAll();
-        Assertions.assertThat(actual.get(0)).usingComparator(new TagComparator()).isEqualTo(TAG);
+        assertEquals(tagList, actual);
     }
 
     @Test
     void getById_whenIdIsValid_success() {
-        when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(TAG));
+        when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(tag));
         Tag actual = tagService.getById(ID);
-        Assertions.assertThat(actual).usingComparator(new TagComparator()).isEqualTo(TAG);
+        assertEquals(tag, actual);
     }
 
     @Test
@@ -62,7 +63,7 @@ class TagServiceTest {
     @Test
     void deleteById_whenIdIsValid_success() {
         assertDoesNotThrow(() -> {
-            when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(TAG));
+            when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(tag));
             tagService.deleteById(ID);
         });
     }
@@ -78,9 +79,9 @@ class TagServiceTest {
 
     @Test
     void getByName_whenNameIsValid_success() {
-        when(tagJdbcDao.getByName(NAME)).thenReturn(Optional.of(TAG));
+        when(tagJdbcDao.getByName(NAME)).thenReturn(Optional.of(tag));
         Tag actual = tagService.getByName(NAME);
-        Assertions.assertThat(actual).usingComparator(new TagComparator()).isEqualTo(TAG);
+        assertEquals(tag, actual);
     }
 
     @Test

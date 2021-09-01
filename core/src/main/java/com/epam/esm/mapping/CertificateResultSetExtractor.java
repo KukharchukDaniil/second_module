@@ -15,12 +15,12 @@ import java.util.List;
  */
 public class CertificateResultSetExtractor implements ResultSetExtractor<List<Certificate>> {
 
-    public static final String ID = "id";
-    public static final String TAG_ID = "tag_id";
-    public static final String TAG_NAME = "tag_name";
+    private static final String ID = "id";
+    private static final String TAG_ID = "tag_id";
+    private static final String TAG_NAME = "tag_name";
 
-    private CertificateRowMapper certificateRowMapper;
-    private TagRowMapper tagRowMapper;
+    private final CertificateRowMapper certificateRowMapper;
+    private final TagRowMapper tagRowMapper;
 
     public CertificateResultSetExtractor() {
         certificateRowMapper = new CertificateRowMapper();
@@ -39,7 +39,7 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<List<Ce
 
     private void processResultSet(ResultSet resultSet, List<Certificate> certificateList) throws SQLException {
         Certificate certificate = null;
-        Long bufferId = null;
+        Long bufferId = null; //used in resultSet iteration to detect new certificate
         List<Tag> tagList = null;
 
         do {

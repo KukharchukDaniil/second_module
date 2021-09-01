@@ -12,13 +12,13 @@ import java.time.LocalDateTime;
  */
 public class CertificateRowMapper implements RowMapper<Certificate> {
 
-    public static final String ID = "id";
-    public static final String NAME = "name";
-    public static final String DESCRIPTION = "description";
-    public static final String PRICE = "price";
-    public static final String DURATION = "duration";
-    public static final String CREATE_DATE = "create_date";
-    public static final String LAST_UPDATE_DATE = "last_update_date";
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String PRICE = "price";
+    private static final String DURATION = "duration";
+    private static final String CREATE_DATE = "create_date";
+    private static final String LAST_UPDATE_DATE = "last_update_date";
 
     @Override
     public Certificate mapRow(ResultSet resultSet, int rowNum) throws SQLException {

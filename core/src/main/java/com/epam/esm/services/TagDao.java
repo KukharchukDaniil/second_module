@@ -1,7 +1,6 @@
 package com.epam.esm.services;
 
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +28,6 @@ public interface TagDao {
      *
      * @param id identifier of {@link Tag}
      * @return {@link Optional} of {@link Tag}
-     * @throws MultipleRecordsWereFoundException if more than one record was found
      */
     Optional<Tag> getById(long id);
 
@@ -46,7 +44,6 @@ public interface TagDao {
      *
      * @param name name field of {@link Tag}
      * @return {@link Optional} of {@link Tag}
-     * @throws MultipleRecordsWereFoundException if more than one record was found
      */
     Optional<Tag> getByName(String name);
 }

@@ -28,7 +28,7 @@ public class TagJdbcDao implements TagDao {
     private static final String GET_BY_NAME = "SELECT * FROM tag WHERE name = ?";
     private static final String ID_COLUMN = "id";
     private static final String NAME_COLUMN = "name";
-    public static final String MORE_THAN_ONE_RECORD_WERE_FOUND_NAME = "More than one record were found {name = %s}";
+    private static final String MORE_THAN_ONE_RECORD_WERE_FOUND_NAME = "More than one record were found {name = %s}";
     public static final String MORE_THAN_ONE_RECORD_WERE_FOUND_ID = "More than one record were found {id = %s}";
     private static final String ID = "id";
 
@@ -60,7 +60,16 @@ public class TagJdbcDao implements TagDao {
     public Optional<Tag> getById(long id) throws MultipleRecordsWereFoundException {
         List<Tag> tagList = jdbcTemplate.query(GET_BY_ID, new TagRowMapper(ID_COLUMN, NAME_COLUMN), id);
         if (tagList.size() > 1) {
-            throw new MultipleRecordsWereFoundException(String.format(MORE_THAN_ONE_RECORD_WERE_FOUND_NAME, id));
+            throw new MultipleRecordsWereFoundException(String.format(MORE_THAN_ONE_RECORD_WERE_FOUND_ID, id));
+        }
+        return tagList.stream().findAny();
+    }
+
+    @Override
+    public Optional<Tag> getByName(String name) {
+        List<Tag> tagList = jdbcTemplate.query(GET_BY_NAME, new TagRowMapper(ID_COLUMN, NAME_COLUMN), name);
+        if (tagList.size() > 1) {
+            throw new MultipleRecordsWereFoundException(String.format(MORE_THAN_ONE_RECORD_WERE_FOUND_NAME, name));
         }
         return tagList.stream().findAny();
     }
@@ -70,12 +79,5 @@ public class TagJdbcDao implements TagDao {
         jdbcTemplate.update(REMOVE_TAG_BY_ID, id);
     }
 
-    public Optional<Tag> getByName(String name) {
-        List<Tag> tagList = jdbcTemplate.query(GET_BY_NAME, new TagRowMapper(ID_COLUMN, NAME_COLUMN), name);
-        if (tagList.size() > 1) {
-            throw new MultipleRecordsWereFoundException(String.format(MORE_THAN_ONE_RECORD_WERE_FOUND_NAME, name));
-        }
-        return tagList.stream().findAny();
-    }
 
 }

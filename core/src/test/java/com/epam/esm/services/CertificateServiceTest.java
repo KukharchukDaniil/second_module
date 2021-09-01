@@ -5,7 +5,6 @@ import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +58,7 @@ class CertificateServiceTest {
     void getById_whenIdIsValid_success() {
         when(certificateJdbcDao.getById(ID)).thenReturn(Optional.of(FIRST_CERTIFICATE));
         Certificate actual = certificateService.getById(ID);
-        Assertions.assertEquals(FIRST_CERTIFICATE, actual);
+        assertEquals(FIRST_CERTIFICATE, actual);
 
     }
 
@@ -64,7 +66,7 @@ class CertificateServiceTest {
     void getById_whenIdIsInvalid_throwsCertificateNotFoundException() {
         when(certificateJdbcDao.getById(ID)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
+        assertThrows(CertificateNotFoundException.class, () -> {
             certificateService.getById(ID);
         });
 
@@ -75,7 +77,14 @@ class CertificateServiceTest {
         List<Certificate> expected = Arrays.asList(FIRST_CERTIFICATE);
         when(certificateJdbcDao.getAll()).thenReturn(expected);
         List<Certificate> actual = certificateService.getAll(CertificateSortingOrder.NONE);
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getAllSorted_whenListIsNull_success() {
+        when(certificateJdbcDao.getAll()).thenReturn(null);
+        List<Certificate> actual = certificateService.getAll(CertificateSortingOrder.ASC);
+        assertEquals(null, actual);
     }
 
     @Test
@@ -83,7 +92,7 @@ class CertificateServiceTest {
         List<Certificate> expected = Arrays.asList(FIRST_CERTIFICATE);
         when(certificateJdbcDao.getByTagName(NAME)).thenReturn(expected);
         List<Certificate> actual = certificateService.getByTagName(NAME);
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -91,7 +100,7 @@ class CertificateServiceTest {
         List<Certificate> expected = Arrays.asList(FIRST_CERTIFICATE, SECOND_CERTIFICATE, THIRD_CERTIFICATE);
         when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(CERTIFICATE_LIST);
         List<Certificate> actual = certificateService.getByNamePartSorted(CertificateSortingOrder.ASC, NAME);
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -99,19 +108,19 @@ class CertificateServiceTest {
         List<Certificate> expected = Arrays.asList(THIRD_CERTIFICATE, SECOND_CERTIFICATE, FIRST_CERTIFICATE);
         when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(CERTIFICATE_LIST);
         List<Certificate> actual = certificateService.getByNamePartSorted(CertificateSortingOrder.DESC, NAME);
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
     void getByNamePartSorted_whenSortingOrderIsNone_success() {
         when(certificateJdbcDao.getByNamePart(NAME)).thenReturn(CERTIFICATE_LIST);
         List<Certificate> actual = certificateService.getByNamePartSorted(CertificateSortingOrder.NONE, NAME);
-        Assertions.assertEquals(CERTIFICATE_LIST, actual);
+        assertEquals(CERTIFICATE_LIST, actual);
     }
 
     @Test
     void update_whenIdIsValid_success() {
-        Assertions.assertDoesNotThrow(() -> {
+        assertDoesNotThrow(() -> {
             when(certificateJdbcDao.getById(ID)).thenReturn(Optional.of(FIRST_CERTIFICATE));
             certificateService.update(FIRST_CERTIFICATE);
         });
@@ -119,7 +128,7 @@ class CertificateServiceTest {
 
     @Test
     void update_whenIdIsInvalid_throwsCertificateNotFoundException() {
-        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
+        assertThrows(CertificateNotFoundException.class, () -> {
             when(certificateJdbcDao.getById(ID)).thenReturn(Optional.empty());
             certificateService.update(FIRST_CERTIFICATE);
         });
@@ -127,7 +136,7 @@ class CertificateServiceTest {
 
     @Test
     void delete_whenIdIsValid_success() {
-        Assertions.assertDoesNotThrow(() -> {
+        assertDoesNotThrow(() -> {
             when(certificateJdbcDao.getById(ID)).thenReturn(Optional.of(new Certificate()));
             certificateService.delete(ID);
         });
@@ -135,7 +144,7 @@ class CertificateServiceTest {
 
     @Test
     void delete_whenIdIsInvalid_throwsCertificateNotFoundException() {
-        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
+        assertThrows(CertificateNotFoundException.class, () -> {
             when(certificateJdbcDao.getById(ID)).thenReturn(Optional.empty());
             certificateService.delete(ID);
         });

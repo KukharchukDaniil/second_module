@@ -16,8 +16,8 @@ import java.util.Optional;
 @Service
 public class TagService {
 
-    public static final String NO_TAG_WITH_ID = "No tag was found{id = %s}";
-    public static final String TAG_WITH_THIS_NAME_ALREADY_EXISTS = "Tag name is already used {name = %s}";
+    private static final String NO_TAG_WITH_ID = "No tag was found{id = %s}";
+    private static final String TAG_WITH_THIS_NAME_ALREADY_EXISTS = "Tag name is already used {name = %s}";
     private static final String NO_TAG_WITH_NAME = "Invalid tag name.No tag was found {name = %s}";
     private final TagDao tagDao;
 
@@ -55,7 +55,6 @@ public class TagService {
      *
      * @param id entity id
      * @return {@link Tag}
-     * @throws TagNotFoundException if no tags with such ID were found
      */
     public Tag getById(long id) {
         Optional<Tag> tagOptional = tagDao.getById(id);
@@ -70,7 +69,6 @@ public class TagService {
      * Creates new record in DB
      *
      * @param tag {@link Tag tag entity}
-     * @throws TagAlreadyExistsException if tag with this name already exists
      */
     public void create(Tag tag) {
 
@@ -86,7 +84,6 @@ public class TagService {
      *
      * @param name name of the {@link Tag}
      * @return {@link Tag} entity
-     * @throws TagNotFoundException if no tag with this name was found
      */
     public Tag getByName(String name) {
         Optional<Tag> tagOptional = tagDao.getByName(name);

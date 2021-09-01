@@ -1,5 +1,7 @@
 package com.epam.esm.entities;
 
+import java.util.Objects;
+
 /**
  * Stores data from "tags" table
  */
@@ -29,5 +31,17 @@ public class Tag extends Entity {
         this.name = name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tag)) return false;
+        if (!super.equals(o)) return false;
+        Tag tag = (Tag) o;
+        return Objects.equals(name, tag.name) && Objects.equals(getId(), tag.getId());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name);
+    }
 }

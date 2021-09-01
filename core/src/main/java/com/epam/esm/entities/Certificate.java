@@ -2,6 +2,7 @@ package com.epam.esm.entities;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -89,6 +90,23 @@ public class Certificate extends Entity {
 
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Certificate)) return false;
+        if (!super.equals(o)) return false;
+        Certificate that = (Certificate) o;
+        return Objects.equals(getId(), that.getId()) && Objects.equals(tagList, that.tagList)
+                && Objects.equals(name, that.name) && Objects.equals(description, that.description)
+                && Objects.equals(price, that.price) && Objects.equals(duration, that.duration)
+                && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), tagList, name, description, price, duration, createDate, lastUpdateDate);
     }
 
 }

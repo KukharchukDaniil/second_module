@@ -8,6 +8,7 @@ import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
 import com.epam.esm.exceptions.service.ServiceException;
 import com.epam.esm.services.CertificateService;
+import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,10 +59,12 @@ public class CertificateController {
      * @param tagName            {@link Tag} name, needed for data filtering. Method returns all
      *                           *                 {@link Certificate} attached to {@link Tag} with corresponding name when this parameter provided.
      * @return <ul>ResponseEntity containing {@link List<Certificate>} filtered by name part, when namePart provided.
+     * Response status: 200 OK</ul>
+     *     <ul>ResponseEntity containing {@link List<Certificate>} filtered by tag, when tagName provided; or {@code null}
+     *     if no Certificates were found.
      *     Response status: 200 OK</ul>
-     *     <ul>ResponseEntity containing {@link List<Certificate>} filtered by tag, when tagName provided.
-     *     Response status: 200 OK</ul>
-     *     <ul>ResponseEntity containing {@link List<Certificate>} which contains all certificates in data source.
+     *     <ul>ResponseEntity containing {@link List<Certificate>} which contains all certificates in data source;
+     *     or {@code null} if no Certificates were found.
      *     Response status: 200 OK</ul>
      *     <ul>ResponseEntity containing ErrorInfo,namePart and tagName provided at the same time .
      *     Response status: 400 Bad Request</ul>
@@ -75,16 +78,20 @@ public class CertificateController {
             return new ResponseEntity(new ErrorInfo(HttpStatus.BAD_REQUEST, ERROR_CODE, ERROR_MESSAGE), HttpStatus.BAD_REQUEST);
         }
         List<Certificate> resultList;
-        CertificateSortingOrder certificateSortingOrder = sortingOrderString != null ?
-                CertificateSortingOrder.valueOf(sortingOrderString.toUpperCase(Locale.ROOT))
-                : CertificateSortingOrder.NONE;
-        if (namePart != null && !namePart.isEmpty()) {
+        CertificateSortingOrder certificateSortingOrder = getCertificateSortingOrder(sortingOrderString);
+        if (!StringUtils.isNullOrEmpty(namePart)) {
             resultList = certificateService.getByNamePartSorted(certificateSortingOrder, namePart);
-            ;
+
         } else {
             resultList = certificateService.getAll(certificateSortingOrder);
         }
         return ResponseEntity.ok(resultList);
+    }
+
+    private CertificateSortingOrder getCertificateSortingOrder(String sortingOrderString) {
+        return sortingOrderString != null ?
+                CertificateSortingOrder.valueOf(sortingOrderString.toUpperCase(Locale.ROOT))
+                : CertificateSortingOrder.NONE;
     }
 
 
@@ -147,7 +154,7 @@ public class CertificateController {
      * <li>ResponseEntity. Response status: 404 Not Found. When no certificate with this id were found</li>
      */
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Certificate> getById(@PathVariable("id") long id) throws ServiceException {
+    public ResponseEntity<Certificate> getById(@PathVariable("id") long id) {
         return ResponseEntity.ok(certificateService.getById(id));
     }
 

@@ -2,7 +2,6 @@ package com.epam.esm.services;
 
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +44,6 @@ public interface CertificateDao {
      * Updates {@link Certificate} entity in data source.
      *
      * @param entity {@link Certificate} entity that needs to be updated
-     * @throws MultipleRecordsWereFoundException if more than one record was found
      */
     void update(Certificate entity);
 
