@@ -23,7 +23,6 @@ public class Certificate extends Entity {
 
     public Certificate(String name, String description, Integer price, Integer duration,
                        LocalDateTime createDate, LocalDateTime lastUpdateDate) {
-        this.tagList = tagList;
         this.name = name;
         this.description = description;
         this.price = price;
