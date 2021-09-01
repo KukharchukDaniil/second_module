@@ -15,11 +15,11 @@ public class CertificateValidator extends AbstractValidator {
 
     private static final String ID_IS_NOT_VALID = "Certificate id is not valid {id = %s}";
     private static final String ID_DETAILS = "ID parameter can't be negative";
-    private static final String NAME_IS_NOT_VALID = "Certificate name is not valid {name = '%s'}";
+    private static final String NAME_IS_NOT_VALID = "Certificate name is not valid {name = %s}";
     private static final String NAME_DETAILS = "Name parameter can't be empty";
     private static final String PRICE_IS_NOT_VALID = "Certificate price is not valid {price = %s}";
     private static final String PRICE_DETAILS = "Price parameter can't be negative";
-    private static final String DESCRIPTION_IS_NOT_VALID = "Certificate description is not valid {description = '%s'}";
+    private static final String DESCRIPTION_IS_NOT_VALID = "Certificate description is not valid {description = %s}";
     private static final String DESCRIPTION_DETAILS = "Description parameter can't be empty";
     private static final String DURATION_IS_NOT_VALID = "Certificate duration is not valid {duration = %s}";
     private static final String DURATION_DETAILS = "Duration parameter should be more than 1";

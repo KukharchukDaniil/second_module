@@ -10,7 +10,9 @@ import com.epam.esm.exceptions.service.CertificateNotFoundException;
 import com.epam.esm.exceptions.service.ServiceException;
 import com.epam.esm.services.CertificateService;
 import com.epam.esm.validation.CertificateValidator;
-import com.mysql.cj.util.StringUtils;
+import com.epam.esm.validation.ValidationErrorMessage;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,8 +43,10 @@ public class CertificateController {
 
     private static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50002";
     private static final String CERTIFICATE_NOT_FOUND_ERROR_CODE = "40402";
-    public static final String ERROR_MESSAGE = "Can't process both tag and name params";
+    private static final String TAG_AND_NAME_ERROR_MESSAGE = "Can't process both tag and name params";
     private static final String PARAMETERS_ERROR_CODE = "parameters-02";
+    private static final String ERROR_DETAILS = "Id should be positive long number";
+    private static final String ID_ERROR_MESSAGE = "Invalid tag id {id = %s}";
 
     private final CertificateService certificateService;
     private final CertificateValidator certificateValidator;
@@ -80,15 +84,14 @@ public class CertificateController {
             @RequestParam(value = "name", required = false) String namePart,
             @RequestParam(value = "tag", required = false) String tagName) {
         if (namePart != null && tagName != null) {
-            return new ResponseEntity(new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, ERROR_MESSAGE), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, TAG_AND_NAME_ERROR_MESSAGE), HttpStatus.BAD_REQUEST);
         }
         List<Certificate> resultList;
         CertificateSortingOrder certificateSortingOrder = getCertificateSortingOrder(sortingOrderString);
-        if (!StringUtils.isNullOrEmpty(namePart)) {
-            resultList = certificateService.getByNamePartSorted(certificateSortingOrder, namePart);
-
-        } else {
+        if (StringUtils.isEmpty(namePart)) {
             resultList = certificateService.getAll(certificateSortingOrder);
+        } else {
+            resultList = certificateService.getByNamePartSorted(certificateSortingOrder, namePart);
         }
         return ResponseEntity.ok(resultList);
     }
@@ -150,9 +153,13 @@ public class CertificateController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity deleteCertificate(
-            @PathVariable long id
+            @PathVariable String id
     ) throws ServiceException {
-        certificateService.delete(id);
+        if (!NumberUtils.isCreatable(id) || id.startsWith("-")) {
+            return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ID_ERROR_MESSAGE, id),
+                    ERROR_DETAILS));
+        }
+        certificateService.delete(Long.parseLong(id));
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -202,6 +209,4 @@ public class CertificateController {
                 exception.getLocalizedMessage()
         );
     }
-    //validation
-    //409
 }

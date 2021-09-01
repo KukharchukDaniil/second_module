@@ -58,6 +58,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.hateoas/spring-hateoas
     implementation 'org.springframework.hateoas:spring-hateoas:1.3.3'
 
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+
     implementation project(":core")
 }
 

@@ -8,6 +8,9 @@ import com.epam.esm.exceptions.service.ServiceException;
 import com.epam.esm.exceptions.service.TagAlreadyExistsException;
 import com.epam.esm.exceptions.service.TagNotFoundException;
 import com.epam.esm.services.TagService;
+import com.epam.esm.validation.ValidationErrorMessage;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,6 +39,8 @@ public class TagController {
     public static final String TAG_NOT_FOUND_ERROR_CODE = "40401";
     public static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50001";
     private static final String CREATED = "Created";
+    public static final String ERROR_MESSAGE = "Invalid tag id {id = %s}";
+    public static final String ERROR_DETAILS = "Id should be positive long number";
     private final TagService tagService;
 
     @Autowired
@@ -52,7 +58,7 @@ public class TagController {
     @GetMapping
     public ResponseEntity getAllTags(@RequestAttribute(name = "name", required = false) String name) {
         ResponseEntity responseEntity;
-        if (name == null || name.isEmpty()) {
+        if (StringUtils.isEmpty(name)) {
             responseEntity = ResponseEntity.ok(tagService.getAll());
         } else {
             responseEntity = ResponseEntity.ok(tagService.getByName(name));
@@ -70,8 +76,12 @@ public class TagController {
      *     <ul>ResponseEntity containing ErrorInfo(when no Tag was found). Response status: 404 Not Found</ul>
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Tag> getById(@PathVariable long id) throws ServiceException {
-        return ResponseEntity.ok(tagService.getById(id));
+    public ResponseEntity getById(@PathVariable String id) throws ServiceException {
+        if (!NumberUtils.isCreatable(id) || id.startsWith("-")) {
+            return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
+                    ERROR_DETAILS));
+        }
+        return ResponseEntity.ok(tagService.getById(Long.parseLong(id)));
     }
 
     /**
@@ -99,8 +109,12 @@ public class TagController {
      * <li>ResponseEntity. Response status: 404 Not found. When no tag with this id was found</li>
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteTagById(@PathVariable long id) throws ServiceException {
-        tagService.deleteById(id);
+    public ResponseEntity deleteTagById(@PathVariable String id) throws ServiceException {
+        if (!NumberUtils.isCreatable(id) || id.startsWith("-")) {
+            return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
+                    ERROR_DETAILS));
+        }
+        tagService.deleteById(Long.parseLong(id));
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -112,6 +126,7 @@ public class TagController {
      */
     @ExceptionHandler(TagNotFoundException.class)
     @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     private ErrorInfo handleTagNotFoundException(TagNotFoundException exception) {
         return new ErrorInfo(
                 HttpStatus.NOT_FOUND,
@@ -128,9 +143,10 @@ public class TagController {
      */
     @ExceptionHandler(TagAlreadyExistsException.class)
     @ResponseBody
+    @ResponseStatus(HttpStatus.CONFLICT)
     private ErrorInfo handleTagAlreadyExistsException(TagAlreadyExistsException exception) {
         return new ErrorInfo(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.CONFLICT,
                 MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE,
                 exception.getLocalizedMessage()
         );
@@ -144,6 +160,7 @@ public class TagController {
      */
     @ExceptionHandler({MultipleRecordsWereFoundException.class})
     @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ErrorInfo handleMultipleRecordsWereFoundException(MultipleRecordsWereFoundException exception) {
         return new ErrorInfo(
                 HttpStatus.INTERNAL_SERVER_ERROR,
