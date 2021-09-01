@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-
 /**
  * Stores data from "gift_certificate" table
  */
@@ -19,10 +18,8 @@ public class Certificate extends Entity {
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
-
     public Certificate() {
     }
-
 
     public Certificate(String name, String description, Integer price, Integer duration,
                        LocalDateTime createDate, LocalDateTime lastUpdateDate) {
@@ -34,7 +31,6 @@ public class Certificate extends Entity {
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
     }
-
 
     public List<Tag> getTagList() {
         return tagList;
@@ -107,18 +103,5 @@ public class Certificate extends Entity {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), tagList, name, description, price, duration, createDate, lastUpdateDate);
-    }
-
-    @Override
-    public String toString() {
-        return "Certificate{" +
-                "tagList=" + tagList +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", duration=" + duration +
-                ", createDate=" + createDate +
-                ", lastUpdateDate=" + lastUpdateDate +
-                '}';
     }
 }

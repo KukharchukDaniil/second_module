@@ -29,7 +29,7 @@ public class TagJdbcDao implements TagDao {
     private static final String ID_COLUMN = "id";
     private static final String NAME_COLUMN = "name";
     private static final String MORE_THAN_ONE_RECORD_WERE_FOUND_NAME = "More than one record were found {name = %s}";
-    public static final String MORE_THAN_ONE_RECORD_WERE_FOUND_ID = "More than one record were found {id = %s}";
+    private static final String MORE_THAN_ONE_RECORD_WERE_FOUND_ID = "More than one record were found {id = %s}";
     private static final String ID = "id";
 
     private final JdbcTemplate jdbcTemplate;

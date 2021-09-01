@@ -22,8 +22,8 @@ import static org.mockito.Mockito.when;
 class TagServiceTest {
 
     private static TagJdbcDao tagJdbcDao;
-    public static final String NAME = "name";
-    public static final long ID = 1;
+    private static final String NAME = "name";
+    private static final long ID = 1;
     private static Tag tag;
 
     private static TagService tagService;

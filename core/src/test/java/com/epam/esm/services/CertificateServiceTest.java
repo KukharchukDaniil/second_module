@@ -26,18 +26,18 @@ import static org.mockito.Mockito.when;
 class CertificateServiceTest {
 
     private static LocalDateTime date;
-    public static final int ID = 0;
-    public static final String C_NAME = "c_name";
-    public static final String DESCRIPTION = "description";
-    public static final String B_NAME = "b_name";
-    public static final String A_NAME = "a_name";
-    public static final int PRICE = 1;
-    public static final int DURATION = 1;
+    private static final int ID = 0;
+    private static final String C_NAME = "c_name";
+    private static final String DESCRIPTION = "description";
+    private static final String B_NAME = "b_name";
+    private static final String A_NAME = "a_name";
+    private static final int PRICE = 1;
+    private static final int DURATION = 1;
     public static Certificate firstCertificate;
     public static Certificate secondCertificate;
     public static Certificate thirdCertificate;
     public static List<Certificate> certificateList;
-    public static final String NAME = "name";
+    private static final String NAME = "name";
 
     private static CertificateJdbcDao certificateJdbcDao;
     private static TagJdbcDao tagJdbcDao;

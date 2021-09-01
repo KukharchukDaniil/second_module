@@ -19,10 +19,10 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class SpringTestConfiguration extends SpringConfiguration {
 
-    public static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
-    public static final String URL = "jdbc.url";
-    public static final String USERNAME = "jdbc.username";
-    public static final String PASSWORD = "jdbc.password";
+    private static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
+    private static final String URL = "jdbc.url";
+    private static final String USERNAME = "jdbc.username";
+    private static final String PASSWORD = "jdbc.password";
 
     @Autowired
     public SpringTestConfiguration(Environment environment) {

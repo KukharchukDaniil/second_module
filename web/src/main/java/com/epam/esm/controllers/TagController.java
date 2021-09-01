@@ -36,11 +36,11 @@ import java.util.List;
 @RequestMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
-    public static final String TAG_NOT_FOUND_ERROR_CODE = "40401";
-    public static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50001";
+    private static final String TAG_NOT_FOUND_ERROR_CODE = "40401";
+    private static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50001";
     private static final String CREATED = "Created";
-    public static final String ERROR_MESSAGE = "Invalid tag id {id = %s}";
-    public static final String ERROR_DETAILS = "Id should be positive long number";
+    private static final String ERROR_MESSAGE = "Invalid tag id {id = %s}";
+    private static final String ERROR_DETAILS = "Id should be positive long number";
     private final TagService tagService;
 
     @Autowired
