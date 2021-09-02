@@ -45,7 +45,7 @@ public class CertificateController {
     private static final String CERTIFICATE_NOT_FOUND_ERROR_CODE = "40402";
     private static final String TAG_AND_NAME_ERROR_MESSAGE = "Can't process both tag and name params";
     private static final String PARAMETERS_ERROR_CODE = "parameters-02";
-    private static final String ERROR_DETAILS = "Id should be positive long number without any spaces before it";
+    private static final String ERROR_DETAILS = "Id should be positive number";
     private static final String ID_ERROR_MESSAGE = "Invalid tag id {id = %s}";
 
     private final CertificateService certificateService;
@@ -155,8 +155,7 @@ public class CertificateController {
     public ResponseEntity deleteCertificate(
             @PathVariable String id
     ) throws ServiceException {
-
-        if (!NumberUtils.isParsable(id) || Long.parseLong(id) < 0) {
+        if (!isIdValid(id)) {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ID_ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
@@ -174,7 +173,8 @@ public class CertificateController {
      */
     @GetMapping(value = "/{id}")
     public ResponseEntity getById(@PathVariable("id") String id) {
-        if (!NumberUtils.isParsable(id) || Long.parseLong(id) < 0) {
+
+        if (!isIdValid(id)) {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ID_ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
@@ -213,5 +213,12 @@ public class CertificateController {
                 CERTIFICATE_NOT_FOUND_ERROR_CODE,
                 exception.getLocalizedMessage()
         );
+    }
+
+    private boolean isIdValid(String id) {
+        if (id != null) {
+            id = id.trim();
+        }
+        return (NumberUtils.isParsable(id) && Long.parseLong(id) >= 0);
     }
 }

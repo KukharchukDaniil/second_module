@@ -40,7 +40,7 @@ public class TagController {
     private static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50001";
     private static final String CREATED = "Created";
     private static final String ERROR_MESSAGE = "Invalid tag id {id = %s}";
-    private static final String ERROR_DETAILS = "Id should be positive long number without any spaces before it";
+    private static final String ERROR_DETAILS = "Id should be positive number";
     private final TagService tagService;
 
     @Autowired
@@ -77,11 +77,18 @@ public class TagController {
      */
     @GetMapping("/{id}")
     public ResponseEntity getById(@PathVariable String id) throws ServiceException {
-        if (!NumberUtils.isParsable(id) || Long.parseLong(id) < 0) {
+        if (!isIdValid(id)) {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
         return ResponseEntity.ok(tagService.getById(Long.parseLong(id)));
+    }
+
+    private boolean isIdValid(String id) {
+        if (id != null) {
+            id = id.trim();
+        }
+        return (NumberUtils.isParsable(id) && Long.parseLong(id) >= 0);
     }
 
     /**
@@ -110,7 +117,7 @@ public class TagController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity deleteTagById(@PathVariable String id) throws ServiceException {
-        if (!NumberUtils.isCreatable(id) || id.startsWith("-")) {
+        if (!isIdValid(id)) {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
