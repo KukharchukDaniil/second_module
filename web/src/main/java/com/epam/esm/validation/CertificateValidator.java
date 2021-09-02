@@ -37,36 +37,23 @@ public class CertificateValidator extends AbstractValidator {
         List<ValidationErrorMessage> validationErrorMessages = new ArrayList<>();
         validateNameAndId(validationErrorMessages, certificate.getId(), ID_IS_NOT_VALID, ID_DETAILS,
                 certificate.getName(), NAME_IS_NOT_VALID, NAME_DETAILS);
-
         String description = certificate.getDescription();
         if (description != null && description.isEmpty()) {
-            ValidationErrorMessage validationErrorMessage = new ValidationErrorMessage(
-                    String.format(DESCRIPTION_IS_NOT_VALID, description), DESCRIPTION_DETAILS
-            );
-            validationErrorMessages.add(validationErrorMessage);
+            addValidationErrorMessage(validationErrorMessages, description, DESCRIPTION_IS_NOT_VALID, DESCRIPTION_DETAILS);
         }
 
         Integer price = certificate.getPrice();
         if (price != null && price < 0) {
-            ValidationErrorMessage validationErrorMessage = new ValidationErrorMessage(
-                    String.format(PRICE_IS_NOT_VALID, price), PRICE_DETAILS
-            );
-            validationErrorMessages.add(validationErrorMessage);
+            addValidationErrorMessage(validationErrorMessages, price, PRICE_IS_NOT_VALID, PRICE_DETAILS);
         }
 
         Integer duration = certificate.getDuration();
         if (duration != null && duration < 1) {
-            ValidationErrorMessage validationErrorMessage = new ValidationErrorMessage(
-                    String.format(DURATION_IS_NOT_VALID, duration), DURATION_DETAILS
-            );
-            validationErrorMessages.add(validationErrorMessage);
+            addValidationErrorMessage(validationErrorMessages, duration, DURATION_IS_NOT_VALID, DURATION_DETAILS);
         }
 
-        Optional<ValidationError> tagValidationErrorOptional = tagsValidator.validateTags(certificate.getTagList());
-        if (tagValidationErrorOptional.isPresent()) {
-            ValidationError tagValidationError = tagValidationErrorOptional.get();
-            validationErrorMessages.addAll(tagValidationError.getValidationErrorMessages());
-        }
+        processTagListValidation(certificate, validationErrorMessages);
+
         return validationErrorMessages.isEmpty() ? Optional.empty() : Optional.of(
                 new ValidationError(
                         HttpStatus.BAD_REQUEST, VALIDATION_ERROR_CODE,
@@ -75,5 +62,13 @@ public class CertificateValidator extends AbstractValidator {
         );
     }
 
-
+    private void processTagListValidation(Certificate certificate, List<ValidationErrorMessage> validationErrorMessages) {
+        Optional<ValidationError> tagValidationErrorOptional = tagsValidator.validateTags(certificate.getTagList());
+        if (tagValidationErrorOptional.isPresent()) {
+            ValidationError tagValidationError = tagValidationErrorOptional.get();
+            validationErrorMessages.addAll(tagValidationError.getValidationErrorMessages());
+        }
+    }
 }
+
+
