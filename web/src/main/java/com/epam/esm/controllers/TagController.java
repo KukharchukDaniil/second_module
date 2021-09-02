@@ -81,14 +81,7 @@ public class TagController {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
-        return ResponseEntity.ok(tagService.getById(Long.parseLong(id)));
-    }
-
-    private boolean isIdValid(String id) {
-        if (id != null) {
-            id = id.trim();
-        }
-        return (NumberUtils.isParsable(id) && Long.parseLong(id) >= 0);
+        return ResponseEntity.ok(tagService.getById(Long.parseLong(id.trim())));
     }
 
     /**
@@ -121,7 +114,7 @@ public class TagController {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
-        tagService.deleteById(Long.parseLong(id));
+        tagService.deleteById(Long.parseLong(id.trim()));
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -174,5 +167,10 @@ public class TagController {
                 MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE,
                 exception.getLocalizedMessage()
         );
+    }
+
+    private boolean isIdValid(String id) {
+
+        return (id != null && NumberUtils.isParsable(id.trim()) && Long.parseLong(id.trim()) >= 0);
     }
 }

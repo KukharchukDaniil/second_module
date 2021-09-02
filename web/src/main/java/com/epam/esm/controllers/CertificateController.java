@@ -159,7 +159,7 @@ public class CertificateController {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ID_ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
-        certificateService.delete(Long.parseLong(id));
+        certificateService.delete(Long.parseLong(id.trim()));
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -178,7 +178,7 @@ public class CertificateController {
             return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ID_ERROR_MESSAGE, id),
                     ERROR_DETAILS));
         }
-        return ResponseEntity.ok(certificateService.getById(Long.parseLong(id)));
+        return ResponseEntity.ok(certificateService.getById(Long.parseLong(id.trim())));
     }
 
     /**
@@ -216,9 +216,6 @@ public class CertificateController {
     }
 
     private boolean isIdValid(String id) {
-        if (id != null) {
-            id = id.trim();
-        }
-        return (NumberUtils.isParsable(id) && Long.parseLong(id) >= 0);
+        return (id != null && NumberUtils.isParsable(id.trim()) && Long.parseLong(id.trim()) >= 0);
     }
 }
