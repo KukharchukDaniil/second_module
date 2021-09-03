@@ -2,6 +2,8 @@ package com.epam.esm.errors;
 
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
+
 /**
  * Class for storing exception info
  */
@@ -9,13 +11,21 @@ public class ErrorInfo {
     private final HttpStatus status;
     private final String errorCode;
     private final String errorMessage;
+    private final List<Object> errorObjects;
 
     public ErrorInfo(HttpStatus status, String errorCode, String errorMessage) {
         this.status = status;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
+        this.errorObjects = null;
     }
 
+    private ErrorInfo(HttpStatus status, String errorCode, String errorMessage, List<Object> errorObjects) {
+        this.status = status;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+        this.errorObjects = errorObjects;
+    }
 
     public HttpStatus getStatus() {
         return status;

@@ -5,8 +5,7 @@ import java.util.List;
 public class ValidationInfo {
     private List<ValidationErrorMessage> validationErrorMessages;
 
-    public ValidationInfo(
-            List<ValidationErrorMessage> validationErrorMessages) {
+    public ValidationInfo(List<ValidationErrorMessage> validationErrorMessages) {
         this.validationErrorMessages = validationErrorMessages;
     }
 

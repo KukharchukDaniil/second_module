@@ -49,8 +49,7 @@ public class CertificateValidator extends AbstractValidator {
         processTagListValidation(certificate, validationErrorMessages);
 
         return validationErrorMessages.isEmpty() ? Optional.empty() : Optional.of(
-                new ValidationInfo(
-                        validationErrorMessages
+                new ValidationInfo(validationErrorMessages
                 )
         );
     }

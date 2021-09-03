@@ -38,9 +38,9 @@ public class CertificateController {
     private static final String PARAMETERS_ERROR_CODE = "parameters-02";
     private static final String ERROR_DETAILS = "Id should be positive number";
     private static final String ID_ERROR_MESSAGE = "Invalid tag id {id = %s}";
-    public static final String NONE = "NONE";
-    public static final String ASC = "ASC";
-    public static final String DESC = "DESC";
+    private static final String NONE = "NONE";
+    private static final String ASC = "ASC";
+    private static final String DESC = "DESC";
     private static final String INVALID_SORTING_ORDER = "Invalid sorting order {sort = %s}";
 
     private final CertificateService certificateService;

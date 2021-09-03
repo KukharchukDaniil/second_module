@@ -21,10 +21,10 @@ import javax.sql.DataSource;
 @PropertySource("classpath:spring_config.properties")
 public class SpringConfiguration {
 
-    public static final String EXTRACTOR_TAG_ROW_MAPPER_ID = "extractor.tagRowMapperIdColumn";
-    public static final String EXTRACTOR_TAG_ROW_MAPPER_NAME = "extractor.tagRowMapperNameColumn";
-    public static final String DAO_TAG_ROW_MAPPER_ID_COLUMN = "dao.tagRowMapperIdColumn";
-    public static final String DAO_TAG_ROW_MAPPER_NAME_COLUMN = "dao.tagRowMapperNameColumn";
+    private static final String EXTRACTOR_TAG_ROW_MAPPER_ID = "extractor.tagRowMapperIdColumn";
+    private static final String EXTRACTOR_TAG_ROW_MAPPER_NAME = "extractor.tagRowMapperNameColumn";
+    private static final String DAO_TAG_ROW_MAPPER_ID_COLUMN = "dao.tagRowMapperIdColumn";
+    private static final String DAO_TAG_ROW_MAPPER_NAME_COLUMN = "dao.tagRowMapperNameColumn";
     protected final Environment environment;
 
     private static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
