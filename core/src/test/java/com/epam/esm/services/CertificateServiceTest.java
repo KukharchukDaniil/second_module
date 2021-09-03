@@ -50,24 +50,13 @@ class CertificateServiceTest {
     public static void initClass() {
         date = LocalDateTime.now();
 
-        thirdCertificate = new Certificate(
-                C_NAME, DESCRIPTION, PRICE, DURATION, date, date
-        );
+        thirdCertificate = new Certificate(C_NAME, DESCRIPTION, PRICE, DURATION, date, date);
 
-        secondCertificate = new Certificate(
-                B_NAME, DESCRIPTION, PRICE, DURATION, date, date
-        );
+        secondCertificate = new Certificate(B_NAME, DESCRIPTION, PRICE, DURATION, date, date);
 
-        firstCertificate = new Certificate(
-                A_NAME, DESCRIPTION, PRICE, DURATION, date, date
-        );
+        firstCertificate = new Certificate(A_NAME, DESCRIPTION, PRICE, DURATION, date, date);
 
-        certificateList =
-                Arrays.asList(
-                        firstCertificate,
-                        secondCertificate,
-                        thirdCertificate
-                );
+        certificateList = Arrays.asList(firstCertificate, secondCertificate, thirdCertificate);
     }
 
     @BeforeEach
