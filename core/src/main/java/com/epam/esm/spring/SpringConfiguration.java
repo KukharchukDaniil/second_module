@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
-import java.util.ResourceBundle;
 
 /**
  * Provides configuration for Spring container
@@ -71,9 +70,5 @@ public class SpringConfiguration {
                 environment.getProperty(DAO_TAG_ROW_MAPPER_NAME_COLUMN));
     }
 
-    @Bean
-    public ResourceBundle resourceBundle() {
-        return ResourceBundle.getBundle(environment.getProperty(RESOURCE_BUNDLE_BASE_NAME));
-    }
 
 }
