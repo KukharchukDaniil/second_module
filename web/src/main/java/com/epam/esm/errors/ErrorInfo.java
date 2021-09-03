@@ -11,7 +11,7 @@ public class ErrorInfo {
     private final HttpStatus status;
     private final String errorCode;
     private final String errorMessage;
-    private final List<Object> errorObjects;
+    private final List<?> errorObjects;
 
     public ErrorInfo(HttpStatus status, String errorCode, String errorMessage) {
         this.status = status;
@@ -20,7 +20,7 @@ public class ErrorInfo {
         this.errorObjects = null;
     }
 
-    private ErrorInfo(HttpStatus status, String errorCode, String errorMessage, List<Object> errorObjects) {
+    public ErrorInfo(HttpStatus status, String errorCode, String errorMessage, List<?> errorObjects) {
         this.status = status;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
@@ -39,4 +39,7 @@ public class ErrorInfo {
         return errorMessage;
     }
 
+    public List<?> getErrorObjects() {
+        return errorObjects;
+    }
 }

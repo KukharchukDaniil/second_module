@@ -27,6 +27,8 @@ public class GlobalControllerExceptionHandler {
     private static final String CERTIFICATE_NOT_FOUND_ERROR_CODE = "40402";
     private static final String TAG_NOT_FOUND_ERROR_CODE = "40401";
     private static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50001";
+    public static final String ERROR_CODE = "validation-500";
+    public static final String ERROR_HAS_OCCURRED = "validation.errorOccurred";
 
     @Resource
     private MessageSource messageSource;
@@ -90,7 +92,7 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ValidationInfo handleValidationException(ValidationException exception, Locale locale) {
+    private ErrorInfo handleValidationException(ValidationException exception, Locale locale) {
         ValidationInfo validationInfo = exception.getValidationInfo();
         List<ValidationErrorMessage> validationErrorMessages = validationInfo.getValidationErrorMessages();
 
@@ -98,8 +100,12 @@ public class GlobalControllerExceptionHandler {
         for (ValidationErrorMessage message : validationErrorMessages) {
             localizedMessages.add(localizeErrorMessage(message, locale));
         }
-        validationInfo.setValidationErrorMessages(localizedMessages);
-        return validationInfo;
+        return new ErrorInfo(
+                HttpStatus.BAD_REQUEST,
+                ERROR_CODE,
+                messageSource.getMessage(ERROR_HAS_OCCURRED, null, locale),
+                localizedMessages
+        );
     }
 
     @ExceptionHandler(ResponseException.class)
