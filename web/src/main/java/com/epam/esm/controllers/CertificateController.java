@@ -4,13 +4,10 @@ import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.errors.ErrorInfo;
-import com.epam.esm.errors.ValidationError;
 import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
-import com.epam.esm.exceptions.service.CertificateNotFoundException;
 import com.epam.esm.exceptions.service.ServiceException;
+import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import com.epam.esm.services.CertificateService;
-import com.epam.esm.validation.CertificateValidator;
-import com.epam.esm.validation.ValidationErrorMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,13 +22,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 /**
  * Provides REST API functionality for {@link Certificate}
@@ -41,20 +34,20 @@ import java.util.Optional;
 @RequestMapping(value = "/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
 
-    private static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50002";
-    private static final String CERTIFICATE_NOT_FOUND_ERROR_CODE = "40402";
     private static final String TAG_AND_NAME_ERROR_MESSAGE = "Can't process both tag and name params";
     private static final String PARAMETERS_ERROR_CODE = "parameters-02";
     private static final String ERROR_DETAILS = "Id should be positive number";
     private static final String ID_ERROR_MESSAGE = "Invalid tag id {id = %s}";
+    public static final String NONE = "NONE";
+    public static final String ASC = "ASC";
+    public static final String DESC = "DESC";
+    private static final String INVALID_SORTING_ORDER = "Invalid sorting order {sort = %s}";
 
     private final CertificateService certificateService;
-    private final CertificateValidator certificateValidator;
 
     @Autowired
-    public CertificateController(CertificateService certificateService, CertificateValidator certificateValidator) {
+    public CertificateController(CertificateService certificateService) {
         this.certificateService = certificateService;
-        this.certificateValidator = certificateValidator;
     }
 
     /**
@@ -84,8 +77,17 @@ public class CertificateController {
             @RequestParam(value = "name", required = false) String namePart,
             @RequestParam(value = "tag", required = false) String tagName) {
         if (namePart != null && tagName != null) {
-            return new ResponseEntity(new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, TAG_AND_NAME_ERROR_MESSAGE), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(
+                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, TAG_AND_NAME_ERROR_MESSAGE),
+                    HttpStatus.BAD_REQUEST);
         }
+        if (!isSortingOrderStringValid(sortingOrderString)) {
+            return new ResponseEntity(
+                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE,
+                            String.format(INVALID_SORTING_ORDER, sortingOrderString)),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         List<Certificate> resultList;
         CertificateSortingOrder certificateSortingOrder = getCertificateSortingOrder(sortingOrderString);
         if (StringUtils.isEmpty(namePart)) {
@@ -114,10 +116,7 @@ public class CertificateController {
     public ResponseEntity createCertificate(
             @RequestBody Certificate certificate
     ) {
-        Optional<ValidationError> validationErrorOptional = certificateValidator.validateCertificate(certificate);
-        if (validationErrorOptional.isPresent()) {
-            return new ResponseEntity(validationErrorOptional.get(), HttpStatus.BAD_REQUEST);
-        }
+
         certificateService.create(certificate);
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -135,10 +134,6 @@ public class CertificateController {
     public ResponseEntity updateCertificate(
             @RequestBody Certificate certificate
     ) {
-        Optional<ValidationError> validationErrorOptional = certificateValidator.validateCertificate(certificate);
-        if (validationErrorOptional.isPresent()) {
-            return new ResponseEntity(validationErrorOptional.get(), HttpStatus.BAD_REQUEST);
-        }
         certificateService.update(certificate);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -187,35 +182,20 @@ public class CertificateController {
      * @param exception {@link MultipleRecordsWereFoundException exception} to handle
      * @return ErrorInfo object containing exception info with errorCode = 50002. Response status: 500 Internal Server Error.
      */
-    @ExceptionHandler(MultipleRecordsWereFoundException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    private ErrorInfo handleMultipleRecordsWereFoundException(MultipleRecordsWereFoundException exception) {
-        return new ErrorInfo(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE,
-                exception.getLocalizedMessage()
-        );
-    }
-
-    /**
-     * Handles exception and returns ErrorInfo object
-     *
-     * @param exception {@link CertificateNotFoundException exception} to handle
-     * @return ErrorInfo object containing exception info with errorCode = 40402. Response status: 404 Not Found.
-     */
-    @ExceptionHandler(CertificateNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ResponseBody
-    private ErrorInfo handleCertificateNotFoundException(CertificateNotFoundException exception) {
-        return new ErrorInfo(
-                HttpStatus.NOT_FOUND,
-                CERTIFICATE_NOT_FOUND_ERROR_CODE,
-                exception.getLocalizedMessage()
-        );
-    }
 
     private boolean isIdValid(String id) {
         return (id != null && NumberUtils.isParsable(id.trim()) && Long.parseLong(id.trim()) >= 0);
     }
+
+    private boolean isSortingOrderStringValid(String sortingOrderString) {
+        switch (sortingOrderString.toUpperCase()) {
+            case NONE:
+            case ASC:
+            case DESC:
+                return true;
+            default:
+                return false;
+        }
+    }
+
 }

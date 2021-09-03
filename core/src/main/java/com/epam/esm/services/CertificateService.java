@@ -6,6 +6,9 @@ import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
+import com.epam.esm.exceptions.validation.ValidationException;
+import com.epam.esm.exceptions.validation.ValidationInfo;
+import com.epam.esm.validation.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +30,15 @@ public class CertificateService {
 
     private final CertificateDao certificateDao;
 
-    private final TagJdbcDao tagJdbcDao;
+    private final TagDao tagJdbcDao;
+
+    private final CertificateValidator certificateValidator;
 
     @Autowired
-    public CertificateService(CertificateJdbcDao certificateDao, TagJdbcDao tagJdbcDao) {
+    public CertificateService(CertificateJdbcDao certificateDao, TagJdbcDao tagJdbcDao, CertificateValidator certificateValidator) {
         this.certificateDao = certificateDao;
         this.tagJdbcDao = tagJdbcDao;
+        this.certificateValidator = certificateValidator;
     }
 
     /**
@@ -60,7 +66,10 @@ public class CertificateService {
      */
     public List<Certificate> getAll(CertificateSortingOrder order) {
         List<Certificate> certificateList = certificateDao.getAll();
-        return order.sort(certificateList);
+        if (certificateList != null) {
+            order.sort(certificateList);
+        }
+        return certificateList;
     }
 
     /**
@@ -81,7 +90,10 @@ public class CertificateService {
      */
     public List<Certificate> getByNamePartSorted(CertificateSortingOrder sortingOrder, String namePart) {
         List<Certificate> certificates = certificateDao.getByNamePart(namePart);
-        return sortingOrder.sort(certificates);
+        if (certificates != null) {
+            sortingOrder.sort(certificates);
+        }
+        return certificates;
     }
 
     /**
@@ -92,6 +104,8 @@ public class CertificateService {
      */
     @Transactional
     public void update(Certificate certificate) {
+
+        validateCertificate(certificate);
 
         long certificateId = certificate.getId();
         if (!certificateDao.getById(certificateId).isPresent()) {
@@ -127,17 +141,25 @@ public class CertificateService {
      */
     @Transactional
     public void create(Certificate certificate) {
-        if (certificate.getCreateDate() == null) {
-            certificate.setCreateDate(LocalDateTime.now());
-        }
-        if (certificate.getLastUpdateDate() == null) {
-            certificate.setLastUpdateDate(LocalDateTime.now());
-        }
+
+        validateCertificate(certificate);
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+
+        certificate.setCreateDate(localDateTime);
+        certificate.setLastUpdateDate(localDateTime);
 
         List<Tag> tags = certificate.getTagList();
         long certificateId = certificateDao.create(certificate);
         if (tags != null) {
             processTags(tags, certificateId);
+        }
+    }
+
+    private void validateCertificate(Certificate certificate) {
+        Optional<ValidationInfo> validationInfoOptional = certificateValidator.validateCertificate(certificate);
+        if (validationInfoOptional.isPresent()) {
+            throw new ValidationException(validationInfoOptional.get());
         }
     }
 
@@ -157,7 +179,7 @@ public class CertificateService {
         tags.forEach((Tag tag) -> {
             idList.add(tag.getId());
         });
-        certificateDao.detachTagsFromCertificateExceptPresented(certificateId, (Long[]) idList.toArray());
+        certificateDao.detachTagsFromCertificateExceptPresented(certificateId, idList.toArray(new Long[0]));
     }
 
     private Tag getTag(String tagName, Optional<Tag> tagOptional) {

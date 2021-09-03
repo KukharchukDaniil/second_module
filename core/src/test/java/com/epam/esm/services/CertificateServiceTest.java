@@ -5,6 +5,7 @@ import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
+import com.epam.esm.validation.CertificateValidator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ class CertificateServiceTest {
     private static TagJdbcDao tagJdbcDao;
 
     private static CertificateService certificateService;
+    private static CertificateValidator certificateValidator;
 
     @BeforeAll
     public static void initClass() {
@@ -72,7 +74,8 @@ class CertificateServiceTest {
     public void initMethod() {
         certificateJdbcDao = mock(CertificateJdbcDao.class);
         tagJdbcDao = mock(TagJdbcDao.class);
-        certificateService = new CertificateService(certificateJdbcDao, tagJdbcDao);
+        certificateValidator = mock(CertificateValidator.class);
+        certificateService = new CertificateService(certificateJdbcDao, tagJdbcDao, certificateValidator);
     }
 
     @Test

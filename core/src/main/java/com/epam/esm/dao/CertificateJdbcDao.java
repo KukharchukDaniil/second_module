@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ import java.util.Optional;
  * Implements {@link CertificateDao}.
  * <p>Uses {@link JdbcTemplate} for implementing {@link CertificateDao} methods operations
  */
-@Component
+@Repository
 public class CertificateJdbcDao implements CertificateDao {
 
     private static final String MULTIPLE_RECORDS_WERE_FOUND_BY_ID = "Multiple records were found by id: ";
@@ -61,31 +61,34 @@ public class CertificateJdbcDao implements CertificateDao {
             "SELECT COUNT(*) FROM certificate_tag WHERE certificate_id = ? AND tag_id = ?";
 
     private static final String ID = "ID";
-
+    private final CertificateResultSetExtractor certificateResultSetExtractor;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public CertificateJdbcDao(JdbcTemplate jdbcTemplate) {
+    public CertificateJdbcDao(CertificateResultSetExtractor certificateResultSetExtractor, JdbcTemplate jdbcTemplate) {
+        this.certificateResultSetExtractor = certificateResultSetExtractor;
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public List<Certificate> getAll() {
-        return jdbcTemplate.query(GET_ALL, new CertificateResultSetExtractor());
+        return jdbcTemplate.query(GET_ALL, certificateResultSetExtractor);
     }
 
+    @Override
     public List<Certificate> getByTagName(String tagName) {
-        return jdbcTemplate.query(GET_BY_TAG_NAME, new CertificateResultSetExtractor(), tagName);
+        return jdbcTemplate.query(GET_BY_TAG_NAME, certificateResultSetExtractor, tagName);
     }
 
+    @Override
     public List<Certificate> getByNamePart(String namePart) {
         String formattedNamePart = "%" + namePart + "%";
-        return jdbcTemplate.query(GET_BY_NAME_PART, new CertificateResultSetExtractor(), formattedNamePart);
+        return jdbcTemplate.query(GET_BY_NAME_PART, certificateResultSetExtractor, formattedNamePart);
     }
 
     @Override
     public Optional<Certificate> getById(long id) {
-        List<Certificate> query = jdbcTemplate.query(GET_BY_ID, new CertificateResultSetExtractor(), id);
+        List<Certificate> query = jdbcTemplate.query(GET_BY_ID, certificateResultSetExtractor, id);
         if (query.size() > 1) {
             throw new MultipleRecordsWereFoundException(MULTIPLE_RECORDS_WERE_FOUND_BY_ID + id);
         }
@@ -96,8 +99,12 @@ public class CertificateJdbcDao implements CertificateDao {
     public void update(Certificate entity) {
         LocalDateTime createDate = entity.getCreateDate();
         LocalDateTime lastUpdateDate = entity.getLastUpdateDate();
-        jdbcTemplate.update(UPDATE_CERTIFICATE, entity.getName(), entity.getDescription(),
-                entity.getPrice(), entity.getDuration(), createDate != null ? createDate.toString() : null,
+        jdbcTemplate.update(UPDATE_CERTIFICATE,
+                entity.getName(),
+                entity.getDescription(),
+                entity.getPrice(),
+                entity.getDuration(),
+                createDate != null ? createDate.toString() : null,
                 lastUpdateDate != null ? lastUpdateDate.toString() : null,
                 entity.getId());
     }
@@ -123,15 +130,18 @@ public class CertificateJdbcDao implements CertificateDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public boolean isAttachedToTag(long certificateId, long tagId) {
         Integer counter = jdbcTemplate.queryForObject(FIND_CERTIFICATE_TAG, Integer.class, certificateId, tagId);
         return counter == 1;
     }
 
+    @Override
     public void attachCertificateToTag(long certificateId, long tagId) {
         jdbcTemplate.update(ATTACH_CERTIFICATE_TO_TAG, tagId, certificateId);
     }
 
+    @Override
     public void detachTagsFromCertificateExceptPresented(long certificateId, Long[] tagIds) {
 
         jdbcTemplate.update(DETACH_CERTIFICATE_FROM_TAG, certificateId, tagIds);

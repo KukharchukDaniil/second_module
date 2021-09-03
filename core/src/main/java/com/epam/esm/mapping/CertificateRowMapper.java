@@ -2,6 +2,7 @@ package com.epam.esm.mapping;
 
 import com.epam.esm.entities.Certificate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 /**
  * Maps {@link Certificate} from current row in {@link ResultSet}
  */
+@Component
 public class CertificateRowMapper implements RowMapper<Certificate> {
 
     private static final String ID = "id";

@@ -26,8 +26,12 @@ public abstract class Entity implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Entity)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Entity)) {
+            return false;
+        }
         Entity entity = (Entity) o;
         return id == entity.id;
     }

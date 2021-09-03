@@ -9,8 +9,11 @@ import java.sql.SQLException;
 /**
  * Maps {@link Tag} from current row in {@link ResultSet}
  */
+
 public class TagRowMapper implements RowMapper<Tag> {
+
     private final String idColumn;
+
     private final String nameColumn;
 
     public TagRowMapper(String idColumn, String nameColumn) {

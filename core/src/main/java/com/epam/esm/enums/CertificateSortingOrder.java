@@ -10,28 +10,21 @@ import java.util.List;
 public enum CertificateSortingOrder {
     NONE {
         @Override
-        public List<Certificate> sort(List<Certificate> certificateList) {
-            return certificateList;
+        public void sort(List<Certificate> certificateList) {
         }
     },
     ASC {
         @Override
-        public List<Certificate> sort(List<Certificate> certificateList) {
-            if (certificateList != null) {
-                certificateList.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
-            }
-            return certificateList;
+        public void sort(List<Certificate> certificateList) {
+            certificateList.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
         }
     },
     DESC {
         @Override
-        public List<Certificate> sort(List<Certificate> certificateList) {
-            if (certificateList != null) {
-                certificateList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
-            }
-            return certificateList;
+        public void sort(List<Certificate> certificateList) {
+            certificateList.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
         }
     };
 
-    public abstract List<Certificate> sort(List<Certificate> certificateList);
+    public abstract void sort(List<Certificate> certificateList);
 }

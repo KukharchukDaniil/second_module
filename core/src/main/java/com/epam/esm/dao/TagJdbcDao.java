@@ -4,12 +4,12 @@ import com.epam.esm.entities.Tag;
 import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.mapping.TagRowMapper;
 import com.epam.esm.services.TagDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * Implements {@link TagDao < Certificate >}.
  * <p>Uses {@link JdbcTemplate} for CRD operations
  */
-@Component
+@Repository
 public class TagJdbcDao implements TagDao {
 
     private static final String REMOVE_TAG_BY_ID = "DELETE FROM tag WHERE id = ?";
@@ -31,13 +31,13 @@ public class TagJdbcDao implements TagDao {
     private static final String MORE_THAN_ONE_RECORD_WERE_FOUND_NAME = "More than one record were found {name = %s}";
     private static final String MORE_THAN_ONE_RECORD_WERE_FOUND_ID = "More than one record were found {id = %s}";
     private static final String ID = "id";
+    public static final String DAO_TAG_ROW_MAPPER = "daoTagRowMapper";
 
-    private final JdbcTemplate jdbcTemplate;
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public TagJdbcDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @Resource(name = "daoTagRowMapper")
+    private TagRowMapper tagRowMapper;
 
     @Override
     public long create(Tag entity) {
@@ -52,12 +52,12 @@ public class TagJdbcDao implements TagDao {
 
     @Override
     public List<Tag> getAll() {
-        return jdbcTemplate.query(GET_ALL, new TagRowMapper(ID_COLUMN, NAME_COLUMN));
+        return jdbcTemplate.query(GET_ALL, tagRowMapper);
     }
 
     @Override
     public Optional<Tag> getById(long id) throws MultipleRecordsWereFoundException {
-        List<Tag> tagList = jdbcTemplate.query(GET_BY_ID, new TagRowMapper(ID_COLUMN, NAME_COLUMN), id);
+        List<Tag> tagList = jdbcTemplate.query(GET_BY_ID, tagRowMapper, id);
         if (tagList.size() > 1) {
             throw new MultipleRecordsWereFoundException(String.format(MORE_THAN_ONE_RECORD_WERE_FOUND_ID, id));
         }
@@ -66,7 +66,7 @@ public class TagJdbcDao implements TagDao {
 
     @Override
     public Optional<Tag> getByName(String name) {
-        List<Tag> tagList = jdbcTemplate.query(GET_BY_NAME, new TagRowMapper(ID_COLUMN, NAME_COLUMN), name);
+        List<Tag> tagList = jdbcTemplate.query(GET_BY_NAME, tagRowMapper, name);
         if (tagList.size() > 1) {
             throw new MultipleRecordsWereFoundException(String.format(MORE_THAN_ONE_RECORD_WERE_FOUND_NAME, name));
         }

@@ -1,5 +1,7 @@
 package com.epam.esm.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +17,7 @@ public class Certificate extends Entity {
     private String description;
     private Integer price;
     private Integer duration;
+
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
 
@@ -75,6 +78,7 @@ public class Certificate extends Entity {
         return createDate;
     }
 
+    @JsonIgnore
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
@@ -83,15 +87,22 @@ public class Certificate extends Entity {
         return lastUpdateDate;
     }
 
+    @JsonIgnore
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Certificate)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Certificate)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
         Certificate that = (Certificate) o;
         return Objects.equals(getId(), that.getId()) && Objects.equals(tagList, that.tagList)
                 && Objects.equals(name, that.name) && Objects.equals(description, that.description)

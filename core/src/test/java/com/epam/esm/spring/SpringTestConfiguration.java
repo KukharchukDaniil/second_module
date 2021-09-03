@@ -1,6 +1,5 @@
 package com.epam.esm.spring;
 
-import com.epam.esm.dao.CertificateJdbcDao;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -45,9 +44,5 @@ public class SpringTestConfiguration extends SpringConfiguration {
         return new DataSourceTransactionManager(dataSource());
     }
 
-    @Bean
-    public CertificateJdbcDao certificateDao() {
-        return new CertificateJdbcDao(jdbcTemplate());
-    }
 
 }

@@ -33,9 +33,15 @@ public class Tag extends Entity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Tag)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Tag)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
         Tag tag = (Tag) o;
         return Objects.equals(name, tag.name) && Objects.equals(getId(), tag.getId());
     }

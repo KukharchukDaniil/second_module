@@ -1,16 +1,12 @@
-package com.epam.esm.errors;
-
-import com.epam.esm.validation.ValidationErrorMessage;
-import org.springframework.http.HttpStatus;
+package com.epam.esm.exceptions.validation;
 
 import java.util.List;
 
-public class ValidationError extends ErrorInfo {
+public class ValidationInfo {
     private List<ValidationErrorMessage> validationErrorMessages;
 
-    public ValidationError(HttpStatus status, String errorCode, String errorMessage,
-                           List<ValidationErrorMessage> validationErrorMessages) {
-        super(status, errorCode, errorMessage);
+    public ValidationInfo(
+            List<ValidationErrorMessage> validationErrorMessages) {
         this.validationErrorMessages = validationErrorMessages;
     }
 

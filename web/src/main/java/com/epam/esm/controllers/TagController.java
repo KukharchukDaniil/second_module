@@ -2,13 +2,11 @@ package com.epam.esm.controllers;
 
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.errors.ErrorInfo;
-import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.exceptions.service.ServiceException;
-import com.epam.esm.exceptions.service.TagAlreadyExistsException;
 import com.epam.esm.exceptions.service.TagNotFoundException;
+import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import com.epam.esm.services.TagService;
-import com.epam.esm.validation.ValidationErrorMessage;
+import com.epam.esm.validation.TagValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,16 +31,17 @@ import java.util.List;
 @RequestMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
-    private static final String TAG_NOT_FOUND_ERROR_CODE = "40401";
-    private static final String MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE = "50001";
+
     private static final String CREATED = "Created";
     private static final String ERROR_MESSAGE = "Invalid tag id {id = %s}";
     private static final String ERROR_DETAILS = "Id should be positive number";
     private final TagService tagService;
+    private final TagValidator tagValidator;
 
     @Autowired
-    public TagController(TagService tagService) {
+    public TagController(TagService tagService, TagValidator tagValidator) {
         this.tagService = tagService;
+        this.tagValidator = tagValidator;
     }
 
     /**
@@ -124,53 +120,12 @@ public class TagController {
      * @param exception {@link TagNotFoundException exception} to handle
      * @return ErrorInfo object containing exception info with errorCode = 40001. Response status: 404 Not Found.
      */
-    @ExceptionHandler(TagNotFoundException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ErrorInfo handleTagNotFoundException(TagNotFoundException exception) {
-        return new ErrorInfo(
-                HttpStatus.NOT_FOUND,
-                TAG_NOT_FOUND_ERROR_CODE,
-                exception.getLocalizedMessage()
-        );
-    }
 
-    /**
-     * Handles exception and returns ErrorInfo object
-     *
-     * @param exception {@link TagAlreadyExistsException exception} to handle
-     * @return ErrorInfo object containing exception info with errorCode = 50001. Response status: 500 Internal Server Error.
-     */
-    @ExceptionHandler(TagAlreadyExistsException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.CONFLICT)
-    private ErrorInfo handleTagAlreadyExistsException(TagAlreadyExistsException exception) {
-        return new ErrorInfo(
-                HttpStatus.CONFLICT,
-                MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE,
-                exception.getLocalizedMessage()
-        );
-    }
-
-    /**
-     * Handles exception and returns ErrorInfo object
-     *
-     * @param exception {@link MultipleRecordsWereFoundException exception} to handle
-     * @return ErrorInfo object containing exception info with errorCode = 50001. Response status: 500 Internal Server Error.
-     */
-    @ExceptionHandler({MultipleRecordsWereFoundException.class})
-    @ResponseBody
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    private ErrorInfo handleMultipleRecordsWereFoundException(MultipleRecordsWereFoundException exception) {
-        return new ErrorInfo(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE,
-                exception.getLocalizedMessage()
-        );
-    }
 
     private boolean isIdValid(String id) {
 
         return (id != null && NumberUtils.isParsable(id.trim()) && Long.parseLong(id.trim()) >= 0);
     }
+
+
 }
