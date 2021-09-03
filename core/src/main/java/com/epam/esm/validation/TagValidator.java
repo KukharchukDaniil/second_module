@@ -12,10 +12,10 @@ import java.util.Optional;
 
 @Component
 public class TagValidator extends AbstractValidator {
-    private static final String ID_ERROR_MESSAGE = "Tag id is not valid {id = %s}";
-    private static final String ID_DETAILS = "ID parameter can't be negative";
-    private static final String NAME_ERROR_MESSAGE = "Tag name is not valid {name = %s}";
-    private static final String NAME_DETAILS = "Name parameter can't be empty";
+    private static final String ID_ERROR_MESSAGE = "validation.tag.idNotValid";
+    private static final String ID_DETAILS = "validation.tag.idNotValidDetails";
+    private static final String NAME_ERROR_MESSAGE = "validation.tag.nameIsNotValid";
+    private static final String NAME_DETAILS = "validation.tag.nameIsNotValidDetails";
 
     public Optional<ValidationInfo> validateTags(Tag... tags) {
         List<ValidationErrorMessage> validationErrorMessages = new ArrayList<>();

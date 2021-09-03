@@ -4,8 +4,7 @@ import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.enums.CertificateSortingOrder;
 import com.epam.esm.errors.ErrorInfo;
-import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
-import com.epam.esm.exceptions.service.ServiceException;
+import com.epam.esm.exceptions.ResponseException;
 import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import com.epam.esm.services.CertificateService;
 import org.apache.commons.lang3.StringUtils;
@@ -34,14 +33,14 @@ import java.util.Locale;
 @RequestMapping(value = "/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
 
-    private static final String TAG_AND_NAME_ERROR_MESSAGE = "Can't process both tag and name params";
+    private static final String TAG_AND_NAME_ERROR_MESSAGE = "response.invalidGetAllParams";
     private static final String PARAMETERS_ERROR_CODE = "parameters-02";
-    private static final String ERROR_DETAILS = "Id should be positive number";
-    private static final String ID_ERROR_MESSAGE = "Invalid tag id {id = %s}";
+    private static final String ERROR_DETAILS = "response.idErrorDetails";
+    private static final String ID_ERROR_MESSAGE = "response.idErrorMessage";
     private static final String NONE = "NONE";
     private static final String ASC = "ASC";
     private static final String DESC = "DESC";
-    private static final String INVALID_SORTING_ORDER = "Invalid sorting order {sort = %s}";
+    private static final String INVALID_SORTING_ORDER = "response.sortingOrderMessage";
 
     private final CertificateService certificateService;
 
@@ -77,15 +76,21 @@ public class CertificateController {
             @RequestParam(value = "name", required = false) String namePart,
             @RequestParam(value = "tag", required = false) String tagName) {
         if (namePart != null && tagName != null) {
-            return new ResponseEntity(
-                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, TAG_AND_NAME_ERROR_MESSAGE),
-                    HttpStatus.BAD_REQUEST);
+            throw new ResponseException(
+                    new ErrorInfo(
+                            HttpStatus.BAD_REQUEST,
+                            PARAMETERS_ERROR_CODE,
+                            TAG_AND_NAME_ERROR_MESSAGE
+                    ));
         }
         if (!isSortingOrderStringValid(sortingOrderString)) {
-            return new ResponseEntity(
-                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE,
-                            String.format(INVALID_SORTING_ORDER, sortingOrderString)),
-                    HttpStatus.BAD_REQUEST);
+            throw new ResponseException(
+                    new ErrorInfo(
+                            HttpStatus.BAD_REQUEST,
+                            PARAMETERS_ERROR_CODE,
+                            INVALID_SORTING_ORDER
+                    )
+            );
         }
 
         List<Certificate> resultList;
@@ -149,10 +154,9 @@ public class CertificateController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteCertificate(
             @PathVariable String id
-    ) throws ServiceException {
+    ) {
         if (!isIdValid(id)) {
-            return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ID_ERROR_MESSAGE, id),
-                    ERROR_DETAILS));
+            throw new ResponseException(new ValidationErrorMessage(ID_ERROR_MESSAGE, id, ERROR_DETAILS));
         }
         certificateService.delete(Long.parseLong(id.trim()));
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -170,8 +174,7 @@ public class CertificateController {
     public ResponseEntity getById(@PathVariable("id") String id) {
 
         if (!isIdValid(id)) {
-            return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ID_ERROR_MESSAGE, id),
-                    ERROR_DETAILS));
+            throw new ResponseException(new ValidationErrorMessage(ID_ERROR_MESSAGE, id, ERROR_DETAILS));
         }
         return ResponseEntity.ok(certificateService.getById(Long.parseLong(id.trim())));
     }
@@ -179,7 +182,6 @@ public class CertificateController {
     /**
      * Handles exception and returns ErrorInfo object
      *
-     * @param exception {@link MultipleRecordsWereFoundException exception} to handle
      * @return ErrorInfo object containing exception info with errorCode = 50002. Response status: 500 Internal Server Error.
      */
 

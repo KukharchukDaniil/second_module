@@ -16,9 +16,9 @@ import java.util.Optional;
 @Service
 public class TagService {
 
-    private static final String NO_TAG_WITH_ID = "No tag was found{id = %s}";
-    private static final String TAG_WITH_THIS_NAME_ALREADY_EXISTS = "Tag name is already used {name = %s}";
-    private static final String NO_TAG_WITH_NAME = "Invalid tag name.No tag was found {name = %s}";
+    private static final String NO_TAG_WITH_ID = "tag.noId";
+    private static final String TAG_WITH_THIS_NAME_ALREADY_EXISTS = "tag.nameBusy";
+    private static final String NO_TAG_WITH_NAME = "tag.noName";
     private final TagDao tagDao;
 
     @Autowired
@@ -42,7 +42,7 @@ public class TagService {
     public void deleteById(long id) {
         Optional<Tag> tagOptional = tagDao.getById(id);
         if (!tagOptional.isPresent()) {
-            throw new TagNotFoundException(String.format(NO_TAG_WITH_ID, id));
+            throw new TagNotFoundException(NO_TAG_WITH_ID, id);
         }
         tagDao.deleteById(id);
     }
@@ -56,7 +56,7 @@ public class TagService {
     public Tag getById(long id) {
         Optional<Tag> tagOptional = tagDao.getById(id);
         if (!tagOptional.isPresent()) {
-            throw new TagNotFoundException(String.format(NO_TAG_WITH_ID, id));
+            throw new TagNotFoundException(NO_TAG_WITH_ID, id);
         }
         return tagOptional.get();
     }
@@ -69,7 +69,7 @@ public class TagService {
     public void create(Tag tag) {
 
         if (tagDao.getByName(tag.getName()).isPresent()) {
-            throw new TagAlreadyExistsException(String.format(TAG_WITH_THIS_NAME_ALREADY_EXISTS, tag.getName()));
+            throw new TagAlreadyExistsException(TAG_WITH_THIS_NAME_ALREADY_EXISTS, tag.getName());
         }
         tagDao.create(tag);
     }
@@ -83,7 +83,7 @@ public class TagService {
     public Tag getByName(String name) {
         Optional<Tag> tagOptional = tagDao.getByName(name);
         if (!tagOptional.isPresent()) {
-            throw new TagNotFoundException(String.format(NO_TAG_WITH_NAME, name));
+            throw new TagNotFoundException(NO_TAG_WITH_NAME, name);
         }
         return tagOptional.get();
     }

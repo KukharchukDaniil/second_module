@@ -6,18 +6,19 @@ import com.epam.esm.entities.Tag;
  * Should be thrown when identical {@link Tag} was found during CREATE operation
  */
 public class TagAlreadyExistsException extends ServiceException {
-    public TagAlreadyExistsException() {
+    public TagAlreadyExistsException(Object attribute) {
+        super(attribute);
     }
 
-    public TagAlreadyExistsException(String message) {
-        super(message);
+    public TagAlreadyExistsException(String message, Object attribute) {
+        super(message, attribute);
     }
 
-    public TagAlreadyExistsException(String message, Throwable cause) {
-        super(message, cause);
+    public TagAlreadyExistsException(String message, Throwable cause, Object attribute) {
+        super(message, cause, attribute);
     }
 
-    public TagAlreadyExistsException(Throwable cause) {
-        super(cause);
+    public TagAlreadyExistsException(Throwable cause, Object attribute) {
+        super(cause, attribute);
     }
 }

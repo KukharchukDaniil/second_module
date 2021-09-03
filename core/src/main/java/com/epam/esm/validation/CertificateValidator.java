@@ -3,7 +3,6 @@ package com.epam.esm.validation;
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import com.epam.esm.exceptions.validation.ValidationInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -14,24 +13,19 @@ import java.util.Optional;
 @Component
 public class CertificateValidator extends AbstractValidator {
 
-    private static final String ID_ERROR_MESSAGE = "Certificate id is not valid {id = %s}";
-    private static final String ID_DETAILS = "ID parameter can't be negative";
-    private static final String NAME_ERROR_MESSAGE = "Certificate name is not valid {name = %s}";
-    private static final String NAME_DETAILS = "Name parameter can't be empty";
-    private static final String PRICE_IS_NOT_VALID = "Certificate price is not valid {price = %s}";
-    private static final String PRICE_DETAILS = "Price parameter can't be negative";
-    private static final String DESCRIPTION_IS_NOT_VALID = "Certificate description is not valid {description = %s}";
-    private static final String DESCRIPTION_DETAILS = "Description parameter can't be empty";
-    private static final String DURATION_IS_NOT_VALID = "Certificate duration is not valid {duration = %s}";
-    private static final String DURATION_DETAILS = "Duration parameter should be more than 1";
+    private static final String ID_ERROR_MESSAGE = "validation.certificate.idNotValid";
+    private static final String ID_DETAILS = "validation.certificate.idNotValidDetails";
+    private static final String NAME_ERROR_MESSAGE = "validation.certificate.nameNotValid";
+    private static final String NAME_DETAILS = "validation.certificate.nameDetails";
+    private static final String PRICE_IS_NOT_VALID = "validation.certificate.priceNotValid";
+    private static final String PRICE_DETAILS = "validation.certificate.priceNotValidDetails";
+    private static final String DESCRIPTION_IS_NOT_VALID = "validation.certificate.descriptionNotValid";
+    private static final String DESCRIPTION_DETAILS = "validation.certificate.descriptionNotValidDetails";
+    private static final String DURATION_IS_NOT_VALID = "validation.certificate.durationNotValid";
+    private static final String DURATION_DETAILS = "validation.certificate.durationNotValidDetails";
 
     @Resource
-    private final TagValidator tagValidator;
-
-    @Autowired
-    public CertificateValidator(TagValidator tagValidator) {
-        this.tagValidator = tagValidator;
-    }
+    private TagValidator tagValidator;
 
     public Optional<ValidationInfo> validateCertificate(Certificate certificate) {
         List<ValidationErrorMessage> validationErrorMessages = new ArrayList<>();

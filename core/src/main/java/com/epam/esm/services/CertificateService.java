@@ -26,7 +26,7 @@ import java.util.Optional;
 @Service
 public class CertificateService {
 
-    private static final String NO_CERTIFICATE_FOUND_BY_THIS_ID = "No certificate found{id = %s}";
+    private static final String NO_CERTIFICATE_FOUND_BY_THIS_ID = "certificate.noId";
 
     private final CertificateDao certificateDao;
 
@@ -52,7 +52,7 @@ public class CertificateService {
 
         Optional<Certificate> certificateOptional = certificateDao.getById(id);
         if (!certificateOptional.isPresent()) {
-            throw new CertificateNotFoundException(String.format(NO_CERTIFICATE_FOUND_BY_THIS_ID, id));
+            throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID, id);
         }
         return certificateOptional.get();
 
@@ -109,7 +109,7 @@ public class CertificateService {
 
         long certificateId = certificate.getId();
         if (!certificateDao.getById(certificateId).isPresent()) {
-            throw new CertificateNotFoundException(String.format(NO_CERTIFICATE_FOUND_BY_THIS_ID, certificateId));
+            throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID, certificateId);
         }
         List<Tag> tags = certificate.getTagList();
         if (tags != null) {
@@ -129,7 +129,7 @@ public class CertificateService {
     public void delete(long certificateId) {
         Optional<Certificate> certificateOptional = certificateDao.getById(certificateId);
         if (!certificateOptional.isPresent()) {
-            throw new CertificateNotFoundException(String.format(NO_CERTIFICATE_FOUND_BY_THIS_ID, certificateId));
+            throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID, certificateId);
         }
         certificateDao.deleteById(certificateId);
     }

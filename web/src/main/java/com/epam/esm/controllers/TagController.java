@@ -2,11 +2,10 @@ package com.epam.esm.controllers;
 
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
+import com.epam.esm.exceptions.ResponseException;
 import com.epam.esm.exceptions.service.ServiceException;
-import com.epam.esm.exceptions.service.TagNotFoundException;
 import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import com.epam.esm.services.TagService;
-import com.epam.esm.validation.TagValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +30,14 @@ import java.util.List;
 @RequestMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
-
-    private static final String CREATED = "Created";
-    private static final String ERROR_MESSAGE = "Invalid tag id {id = %s}";
-    private static final String ERROR_DETAILS = "Id should be positive number";
+    private static final String ERROR_MESSAGE = "response.idErrorMessage";
+    private static final String ERROR_DETAILS = "response.idErrorDetails";
     private final TagService tagService;
-    private final TagValidator tagValidator;
 
     @Autowired
-    public TagController(TagService tagService, TagValidator tagValidator) {
+    public TagController(TagService tagService) {
         this.tagService = tagService;
-        this.tagValidator = tagValidator;
+
     }
 
     /**
@@ -74,8 +70,7 @@ public class TagController {
     @GetMapping("/{id}")
     public ResponseEntity getById(@PathVariable String id) throws ServiceException {
         if (!isIdValid(id)) {
-            return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
-                    ERROR_DETAILS));
+            throw new ResponseException(new ValidationErrorMessage(ERROR_MESSAGE, id, ERROR_DETAILS));
         }
         return ResponseEntity.ok(tagService.getById(Long.parseLong(id.trim())));
     }
@@ -93,7 +88,7 @@ public class TagController {
     @PostMapping
     public ResponseEntity createTag(@RequestBody Tag tag) throws ServiceException {
         tagService.create(tag);
-        return new ResponseEntity(CREATED, HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     /**
@@ -107,8 +102,7 @@ public class TagController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteTagById(@PathVariable String id) throws ServiceException {
         if (!isIdValid(id)) {
-            return ResponseEntity.badRequest().body(new ValidationErrorMessage(String.format(ERROR_MESSAGE, id),
-                    ERROR_DETAILS));
+            throw new ResponseException(new ValidationErrorMessage(ERROR_MESSAGE, id, ERROR_DETAILS));
         }
         tagService.deleteById(Long.parseLong(id.trim()));
         return new ResponseEntity(HttpStatus.OK);
@@ -117,10 +111,8 @@ public class TagController {
     /**
      * Handles exception and returns ErrorInfo object
      *
-     * @param exception {@link TagNotFoundException exception} to handle
      * @return ErrorInfo object containing exception info with errorCode = 40001. Response status: 404 Not Found.
      */
-
 
     private boolean isIdValid(String id) {
 

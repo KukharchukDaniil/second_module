@@ -25,4 +25,5 @@ public class ValidationException extends RuntimeException {
     public ValidationInfo getValidationInfo() {
         return validationInfo;
     }
+
 }

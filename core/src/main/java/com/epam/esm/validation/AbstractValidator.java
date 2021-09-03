@@ -5,6 +5,7 @@ import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import java.util.List;
 
 public abstract class AbstractValidator {
+
     protected void validateName(List<ValidationErrorMessage> validationErrorMessages, String name, String nameErrorMessage, String nameDetails) {
         if (name != null && name.isEmpty()) {
             addValidationErrorMessage(validationErrorMessages,
@@ -22,7 +23,7 @@ public abstract class AbstractValidator {
     protected void addValidationErrorMessage(List<ValidationErrorMessage> validationErrorMessages,
                                              Object value, String errorMessage, String errorDetails) {
         ValidationErrorMessage validationErrorMessage = new ValidationErrorMessage(
-                String.format(errorMessage, value), errorDetails
+                errorMessage, value, errorDetails
         );
         validationErrorMessages.add(validationErrorMessage);
     }

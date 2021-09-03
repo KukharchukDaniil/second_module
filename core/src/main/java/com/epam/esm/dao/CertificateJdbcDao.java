@@ -22,7 +22,7 @@ import java.util.Optional;
 @Repository
 public class CertificateJdbcDao implements CertificateDao {
 
-    private static final String MULTIPLE_RECORDS_WERE_FOUND_BY_ID = "Multiple records were found by id: ";
+    private static final String MULTIPLE_RECORDS_WERE_FOUND_BY_ID = "certificate.multipleId";
     private static final String GET_BY_ID = "SELECT * FROM gift_certificate LEFT JOIN (" +
             " SELECT tag.name as tag_name, tag.id as tag_id, certificate_id FROM certificate_tag" +
             " JOIN tag ON (tag_id = tag.id)) AS new_tag ON (gift_certificate.id = new_tag.certificate_id) WHERE id = ?";
@@ -90,7 +90,7 @@ public class CertificateJdbcDao implements CertificateDao {
     public Optional<Certificate> getById(long id) {
         List<Certificate> query = jdbcTemplate.query(GET_BY_ID, certificateResultSetExtractor, id);
         if (query.size() > 1) {
-            throw new MultipleRecordsWereFoundException(MULTIPLE_RECORDS_WERE_FOUND_BY_ID + id);
+            throw new MultipleRecordsWereFoundException(MULTIPLE_RECORDS_WERE_FOUND_BY_ID, id);
         }
         return query.stream().findAny();
     }

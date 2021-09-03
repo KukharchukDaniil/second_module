@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.ResourceBundle;
 
 /**
  * Provides configuration for Spring container
@@ -25,6 +26,7 @@ public class SpringConfiguration {
     private static final String EXTRACTOR_TAG_ROW_MAPPER_NAME = "extractor.tagRowMapperNameColumn";
     private static final String DAO_TAG_ROW_MAPPER_ID_COLUMN = "dao.tagRowMapperIdColumn";
     private static final String DAO_TAG_ROW_MAPPER_NAME_COLUMN = "dao.tagRowMapperNameColumn";
+    private static final String RESOURCE_BUNDLE_BASE_NAME = "resourceBundle.baseName";
     protected final Environment environment;
 
     private static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";
@@ -67,6 +69,11 @@ public class SpringConfiguration {
     public TagRowMapper daoTagRowMapper() {
         return new TagRowMapper(environment.getProperty(DAO_TAG_ROW_MAPPER_ID_COLUMN),
                 environment.getProperty(DAO_TAG_ROW_MAPPER_NAME_COLUMN));
+    }
+
+    @Bean
+    public ResourceBundle resourceBundle() {
+        return ResourceBundle.getBundle(environment.getProperty(RESOURCE_BUNDLE_BASE_NAME));
     }
 
 }
