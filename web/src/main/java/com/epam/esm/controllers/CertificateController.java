@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Provides REST API functionality for {@link Certificate}
@@ -77,19 +76,11 @@ public class CertificateController {
             @RequestParam(value = "tag", required = false) String tagName) {
         if (namePart != null && tagName != null) {
             throw new ResponseException(
-                    new ErrorInfo(
-                            HttpStatus.BAD_REQUEST,
-                            PARAMETERS_ERROR_CODE,
-                            TAG_AND_NAME_ERROR_MESSAGE
-                    ));
+                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, TAG_AND_NAME_ERROR_MESSAGE));
         }
         if (!isSortingOrderStringValid(sortingOrderString)) {
             throw new ResponseException(
-                    new ErrorInfo(
-                            HttpStatus.BAD_REQUEST,
-                            PARAMETERS_ERROR_CODE,
-                            INVALID_SORTING_ORDER
-                    )
+                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, INVALID_SORTING_ORDER)
             );
         }
 
@@ -105,7 +96,7 @@ public class CertificateController {
 
     private CertificateSortingOrder getCertificateSortingOrder(String sortingOrderString) {
         return sortingOrderString != null ?
-                CertificateSortingOrder.valueOf(sortingOrderString.toUpperCase(Locale.ROOT))
+                CertificateSortingOrder.valueOf(sortingOrderString.toUpperCase())
                 : CertificateSortingOrder.NONE;
     }
 
@@ -190,13 +181,17 @@ public class CertificateController {
     }
 
     private boolean isSortingOrderStringValid(String sortingOrderString) {
-        switch (sortingOrderString.toUpperCase()) {
-            case NONE:
-            case ASC:
-            case DESC:
-                return true;
-            default:
-                return false;
+        if (sortingOrderString != null) {
+            switch (sortingOrderString.toUpperCase()) {
+                case NONE:
+                case ASC:
+                case DESC:
+                    return true;
+                default:
+                    return false;
+            }
+        } else {
+            return false;
         }
     }
 
