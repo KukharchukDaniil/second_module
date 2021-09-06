@@ -47,7 +47,7 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<List<Ce
     }
 
     private Certificate getCertificate(ResultSet resultSet, List<Certificate> certificateList, Certificate certificate) throws SQLException {
-        long currentId = resultSet.getLong(ID);
+        Long currentId = resultSet.getLong(ID);
         if (certificate != null && currentId == certificate.getId()) {
             processTagInCurrentRow(resultSet, certificate, tagRowMapper);
         } else {

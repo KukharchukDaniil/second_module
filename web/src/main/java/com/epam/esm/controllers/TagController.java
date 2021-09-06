@@ -2,12 +2,9 @@ package com.epam.esm.controllers;
 
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.ResponseException;
 import com.epam.esm.exceptions.service.ServiceException;
-import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import com.epam.esm.services.TagService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,8 +27,7 @@ import java.util.List;
 @RequestMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
-    private static final String ERROR_MESSAGE = "response.idErrorMessage";
-    private static final String ERROR_DETAILS = "response.idErrorDetails";
+
     private final TagService tagService;
 
     @Autowired
@@ -69,10 +65,8 @@ public class TagController {
      */
     @GetMapping("/{id}")
     public ResponseEntity getById(@PathVariable String id) throws ServiceException {
-        if (!isIdValid(id)) {
-            throw new ResponseException(new ValidationErrorMessage(ERROR_MESSAGE, id, ERROR_DETAILS));
-        }
-        return ResponseEntity.ok(tagService.getById(Long.parseLong(id.trim())));
+
+        return ResponseEntity.ok(tagService.getById(id));
     }
 
     /**
@@ -101,10 +95,8 @@ public class TagController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity deleteTagById(@PathVariable String id) throws ServiceException {
-        if (!isIdValid(id)) {
-            throw new ResponseException(new ValidationErrorMessage(ERROR_MESSAGE, id, ERROR_DETAILS));
-        }
-        tagService.deleteById(Long.parseLong(id.trim()));
+
+        tagService.deleteById(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -114,10 +106,7 @@ public class TagController {
      * @return ErrorInfo object containing exception info with errorCode = 40001. Response status: 404 Not Found.
      */
 
-    private boolean isIdValid(String id) {
 
-        return (id != null && NumberUtils.isParsable(id.trim()) && Long.parseLong(id.trim()) >= 0);
-    }
 
 
 }

@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ContextConfiguration(classes = {SpringTestConfiguration.class})
 @Transactional
 public class TagJdbcDaoTest {
-    private static final int FREE_TAG_ID = 1;
-    private static final int PRO_TAG_ID = 2;
-    private static final int ADVANCED_TAG_ID = 3;
+    private static final Long FREE_TAG_ID = 1L;
+    private static final Long PRO_TAG_ID = 2L;
+    private static final Long ADVANCED_TAG_ID = 3L;
     private static final String FREE_TAG_NAME = "free";
     private static final String PRO_TAG_NAME = "pro";
     private static final String ADVANCED_TAG_NAME = "advanced";
@@ -77,7 +77,7 @@ public class TagJdbcDaoTest {
     @Test
     @Rollback
     public void create_success() {
-        long tagId = tagJdbcDao.create(createdTag);
+        Long tagId = tagJdbcDao.create(createdTag);
         Optional<Tag> actual = tagJdbcDao.getById(tagId);
         assertTrue(actual.isPresent());
         Tag expected = new Tag(tagId, CREATED_TAG_NAME);

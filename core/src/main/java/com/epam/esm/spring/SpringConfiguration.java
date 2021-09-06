@@ -25,7 +25,6 @@ public class SpringConfiguration {
     private static final String EXTRACTOR_TAG_ROW_MAPPER_NAME = "extractor.tagRowMapperNameColumn";
     private static final String DAO_TAG_ROW_MAPPER_ID_COLUMN = "dao.tagRowMapperIdColumn";
     private static final String DAO_TAG_ROW_MAPPER_NAME_COLUMN = "dao.tagRowMapperNameColumn";
-    private static final String RESOURCE_BUNDLE_BASE_NAME = "resourceBundle.baseName";
     protected final Environment environment;
 
     private static final String DRIVER_CLASS_NAME = "jdbc.driverClassName";

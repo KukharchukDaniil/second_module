@@ -7,28 +7,17 @@ import java.util.Objects;
  */
 public class Tag extends Entity {
 
-    private static final long serialVersionUID = 1L;
-
-    private String name;
+    private static final Long serialVersionUID = 1L;
 
     public Tag() {
     }
 
     public Tag(String name) {
-        this.name = name;
+        super(name);
     }
 
-    public Tag(long id, String name) {
-        super(id);
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public Tag(Long id, String name) {
+        super(id, name);
     }
 
     @Override
@@ -43,12 +32,12 @@ public class Tag extends Entity {
             return false;
         }
         Tag tag = (Tag) o;
-        return Objects.equals(name, tag.name) && Objects.equals(getId(), tag.getId());
+        return Objects.equals(getName(), tag.getName()) && Objects.equals(getId(), tag.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name);
+        return super.hashCode();
     }
 
 }

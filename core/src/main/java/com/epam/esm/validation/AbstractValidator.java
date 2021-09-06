@@ -1,21 +1,20 @@
 package com.epam.esm.validation;
 
 import com.epam.esm.exceptions.validation.ValidationErrorMessage;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public abstract class AbstractValidator {
 
     protected void validateName(List<ValidationErrorMessage> validationErrorMessages, String name, String nameErrorMessage, String nameDetails) {
-        if (StringUtils.isEmpty(name)) {
+        if (name != null && name.isEmpty()) {
             addValidationErrorMessage(validationErrorMessages,
                     name, nameErrorMessage, nameDetails);
         }
     }
 
-    protected void validateId(List<ValidationErrorMessage> validationErrorMessages, long id, String idErrorMessage, String idDetails) {
-        if (id < 0) {
+    protected void validateId(List<ValidationErrorMessage> validationErrorMessages, Long id, String idErrorMessage, String idDetails) {
+        if (id != null && id < 1) {
             addValidationErrorMessage(validationErrorMessages,
                     id, idErrorMessage, idDetails);
         }

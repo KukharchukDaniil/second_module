@@ -37,21 +37,22 @@ public interface CertificateDao {
      * @param id identifier of {@link Certificate} to find by
      * @return Optional of Tag if Tag was found. Else returns Optional.empty()
      */
-    Optional<Certificate> getById(long id);
+    Optional<Certificate> getById(Long id);
 
     /**
      * Updates {@link Certificate} entity in data source.
      *
      * @param entity {@link Certificate} entity that needs to be updated
+     * @return
      */
-    void update(Certificate entity);
+    Certificate update(Certificate entity);
 
     /**
      * Creates {@link Certificate} entity in data source.
      *
      * @param entity {@link Certificate} entity needs to be created
      */
-    long create(Certificate entity);
+    Long create(Certificate entity);
 
     /**
      * @param certificateId certificate id of corresponding row in DB
@@ -59,7 +60,7 @@ public interface CertificateDao {
      * @return true, if there is a record in "certificate_tag" table with corresponding data. Otherwise returns false.
      */
 
-    boolean isAttachedToTag(long certificateId, long tagId);
+    boolean isAttachedToTag(Long certificateId, Long tagId);
 
     /**
      * Attaches certificate to tag in a data source
@@ -67,14 +68,14 @@ public interface CertificateDao {
      * @param certificateId identifier of certificate to be inserted
      * @param tagId         identifier of {@link Tag} to be inserted
      */
-    void attachCertificateToTag(long certificateId, long tagId);
+    void attachCertificateToTag(Long certificateId, Long tagId);
 
     /**
      * Deletes a record from DB by "id" field
      *
      * @param id identifier of the record
      */
-    void deleteById(long id);
+    void deleteById(Long id);
 
     /**
      * Deletes all redundant tags from certificate.
@@ -82,5 +83,7 @@ public interface CertificateDao {
      * @param certificateId id of certificate to process
      * @param tagIds        ids of tags that should be saved
      */
-    void detachTagsFromCertificateExceptPresented(long certificateId, Long[] tagIds);
+    void detachTagsFromCertificateExceptPresented(Long certificateId, Long[] tagIds);
+
+    void detachAllTagsFromCertificate(Long certificateId);
 }

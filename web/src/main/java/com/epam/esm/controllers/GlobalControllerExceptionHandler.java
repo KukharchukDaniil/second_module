@@ -1,9 +1,8 @@
 package com.epam.esm.controllers;
 
-import com.epam.esm.errors.ErrorInfo;
-import com.epam.esm.exceptions.ResponseException;
-import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
+import com.epam.esm.exceptions.ErrorInfo;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
+import com.epam.esm.exceptions.service.ResponseException;
 import com.epam.esm.exceptions.service.TagAlreadyExistsException;
 import com.epam.esm.exceptions.service.TagNotFoundException;
 import com.epam.esm.exceptions.validation.ValidationErrorMessage;
@@ -32,17 +31,6 @@ public class GlobalControllerExceptionHandler {
 
     @Resource
     private MessageSource messageSource;
-
-    @ExceptionHandler(MultipleRecordsWereFoundException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    private ErrorInfo handleMultipleRecordsWereFoundException(MultipleRecordsWereFoundException exception, Locale locale) {
-        return new ErrorInfo(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                MULTIPLE_RECORDS_WHERE_FOUND_ERROR_CODE,
-                messageSource.getMessage(exception.getMessage(), new Object[]{exception.getAttribute()}, locale)
-        );
-    }
 
     /**
      * Handles exception and returns ErrorInfo object

@@ -2,7 +2,6 @@ package com.epam.esm.dao;
 
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.dao.DaoException;
 import com.epam.esm.spring.SpringTestConfiguration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,13 +33,13 @@ public class CertificateJdbcDaoTest {
     private static LocalDateTime date;
     private static final String CERTIFICATE_ONE_NAME = "certificate_one";
     private static final String CERTIFICATE_ONE_DESCRIPTION = "b_description";
-    private static final int CERTIFICATE_ONE_PRICE = 1;
+    private static final BigDecimal CERTIFICATE_ONE_PRICE = BigDecimal.valueOf(1);
     private static final int CERTIFICATE_ONE_DURATION = 1;
-    private static final int CERTIFICATE_ONE_ID = 1;
+    private static final Long CERTIFICATE_ONE_ID = 1L;
     private static final String FREE_TAG_NAME = "free";
-    private static final long FREE_TAG_ID = 1;
-    private static final long PRO_TAG_ID = 2;
-    private static final long ADVANCED_TAG_ID = 3;
+    private static final Long FREE_TAG_ID = 1L;
+    private static final Long PRO_TAG_ID = 2L;
+    private static final Long ADVANCED_TAG_ID = 3L;
     private static final String PRO_TAG_NAME = "pro";
     private static final String ADVANCED_TAG_NAME = "advanced";
     private static final String NAME = "name";
@@ -52,12 +52,12 @@ public class CertificateJdbcDaoTest {
     private static Certificate createExpected;
     private static Certificate certificate_one;
     private static Certificate detachTagCertificate;
-    private static final long CREATE_EXPECTED_ID = 4;
+    private static final Long CREATE_EXPECTED_ID = 4L;
     private static final Integer CERTIFICATE_ONE_CHANGED_DURATION = 222;
     private static final int GET_BY_TAG_NAME_EXPECTED = 2;
     private static final String VALID_NAME_PART = "cer";
     private static final int EXPECTED_GET_BY_NAME_PART = 3;
-    private static final long INVALID_ID = 132;
+    private static final Long INVALID_ID = 132L;
     private static final String INVALID_NAME = "DDDDDDDDDDD";
 
     @Autowired
@@ -121,7 +121,7 @@ public class CertificateJdbcDaoTest {
 
     @Test
     @Rollback
-    public void create_success() throws DaoException {
+    public void create_success() {
 
         Certificate expected = createExpected;
         expected.setId(CREATE_EXPECTED_ID);

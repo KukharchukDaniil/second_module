@@ -29,7 +29,7 @@ public class CertificateRowMapper implements RowMapper<Certificate> {
         certificate.setId(resultSet.getLong(ID));
         certificate.setName(resultSet.getString(NAME));
         certificate.setDescription(resultSet.getString(DESCRIPTION));
-        certificate.setPrice(resultSet.getInt(PRICE));
+        certificate.setPrice(resultSet.getBigDecimal(PRICE));
         certificate.setDuration(resultSet.getInt(DURATION));
 
         String dateString = resultSet.getString(CREATE_DATE);

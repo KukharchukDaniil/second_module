@@ -1,7 +1,6 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.entities.Tag;
-import com.epam.esm.exceptions.dao.MultipleRecordsWereFoundException;
 import com.epam.esm.mapping.TagRowMapper;
 import com.epam.esm.services.TagDao;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,7 +37,7 @@ public class TagJdbcDao implements TagDao {
     private TagRowMapper tagRowMapper;
 
     @Override
-    public long create(Tag entity) {
+    public Long create(Tag entity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_TAG, new String[]{ID});
@@ -54,25 +53,19 @@ public class TagJdbcDao implements TagDao {
     }
 
     @Override
-    public Optional<Tag> getById(long id) throws MultipleRecordsWereFoundException {
+    public Optional<Tag> getById(Long id) {
         List<Tag> tagList = jdbcTemplate.query(GET_BY_ID, tagRowMapper, id);
-        if (tagList.size() > 1) {
-            throw new MultipleRecordsWereFoundException(MORE_THAN_ONE_RECORD_WERE_FOUND_ID, id);
-        }
         return tagList.stream().findAny();
     }
 
     @Override
     public Optional<Tag> getByName(String name) {
         List<Tag> tagList = jdbcTemplate.query(GET_BY_NAME, tagRowMapper, name);
-        if (tagList.size() > 1) {
-            throw new MultipleRecordsWereFoundException(MORE_THAN_ONE_RECORD_WERE_FOUND_NAME, name);
-        }
         return tagList.stream().findAny();
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(REMOVE_TAG_BY_ID, id);
     }
 

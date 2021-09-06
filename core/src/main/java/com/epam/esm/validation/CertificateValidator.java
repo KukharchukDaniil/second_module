@@ -6,6 +6,7 @@ import com.epam.esm.exceptions.validation.ValidationInfo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,8 +57,8 @@ public class CertificateValidator extends AbstractValidator {
     }
 
     private void validatePrice(Certificate certificate, List<ValidationErrorMessage> validationErrorMessages) {
-        Integer price = certificate.getPrice();
-        if (price != null && price < 0) {
+        BigDecimal price = certificate.getPrice();
+        if (price != null && price.compareTo(BigDecimal.valueOf(0)) < 0) {
             addValidationErrorMessage(validationErrorMessages, price, PRICE_IS_NOT_VALID, PRICE_DETAILS);
         }
     }

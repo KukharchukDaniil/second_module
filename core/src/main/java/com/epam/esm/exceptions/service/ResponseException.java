@@ -1,4 +1,6 @@
-package com.epam.esm.exceptions;
+package com.epam.esm.exceptions.service;
+
+import com.epam.esm.exceptions.LocalizedException;
 
 public class ResponseException extends LocalizedException {
     public ResponseException(Object attribute) {

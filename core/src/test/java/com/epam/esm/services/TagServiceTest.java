@@ -23,7 +23,8 @@ class TagServiceTest {
 
     private static TagJdbcDao tagJdbcDao;
     private static final String NAME = "name";
-    private static final long ID = 1;
+    private static final String ID_STRING = "1";
+    private static final Long ID = 1L;
     private static Tag tag;
 
     private static TagService tagService;
@@ -33,6 +34,7 @@ class TagServiceTest {
         tagJdbcDao = mock(TagJdbcDao.class);
         tagService = new TagService(tagJdbcDao);
         tag = new Tag(NAME);
+        tag.setId(ID);
     }
 
     @Test
@@ -46,7 +48,7 @@ class TagServiceTest {
     @Test
     void getById_whenIdIsValid_success() {
         when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(tag));
-        Tag actual = tagService.getById(ID);
+        Tag actual = tagService.getById(ID_STRING);
         assertEquals(tag, actual);
     }
 
@@ -54,7 +56,7 @@ class TagServiceTest {
     void getById_whenIdIsInvalid_throwsTagNotFoundException() {
         assertThrows(TagNotFoundException.class, () -> {
             when(tagJdbcDao.getById(ID)).thenReturn(Optional.empty());
-            tagService.getById(ID);
+            tagService.getById(ID_STRING);
         });
     }
 
@@ -62,7 +64,7 @@ class TagServiceTest {
     void deleteById_whenIdIsValid_success() {
         assertDoesNotThrow(() -> {
             when(tagJdbcDao.getById(ID)).thenReturn(Optional.of(tag));
-            tagService.deleteById(ID);
+            tagService.deleteById(ID_STRING);
         });
     }
 
@@ -70,7 +72,7 @@ class TagServiceTest {
     void deleteById_whenIdIsInvalid_throwsTagNotFoundException() {
         assertThrows(TagNotFoundException.class, () -> {
             when(tagJdbcDao.getById(ID)).thenReturn(Optional.empty());
-            tagService.deleteById(ID);
+            tagService.deleteById(ID_STRING);
         });
     }
 

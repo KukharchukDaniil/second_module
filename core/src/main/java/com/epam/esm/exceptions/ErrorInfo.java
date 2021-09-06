@@ -1,4 +1,4 @@
-package com.epam.esm.errors;
+package com.epam.esm.exceptions;
 
 import org.springframework.http.HttpStatus;
 

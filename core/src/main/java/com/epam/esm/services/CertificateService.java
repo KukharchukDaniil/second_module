@@ -5,11 +5,16 @@ import com.epam.esm.dao.TagJdbcDao;
 import com.epam.esm.entities.Certificate;
 import com.epam.esm.entities.Tag;
 import com.epam.esm.enums.CertificateSortingOrder;
+import com.epam.esm.exceptions.ErrorInfo;
 import com.epam.esm.exceptions.service.CertificateNotFoundException;
+import com.epam.esm.exceptions.service.ResponseException;
+import com.epam.esm.exceptions.validation.ValidationErrorMessage;
 import com.epam.esm.exceptions.validation.ValidationException;
 import com.epam.esm.exceptions.validation.ValidationInfo;
 import com.epam.esm.validation.CertificateValidator;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +32,13 @@ import java.util.Optional;
 public class CertificateService {
 
     private static final String NO_CERTIFICATE_FOUND_BY_THIS_ID = "certificate.noId";
+    private static final String PARAMETERS_ERROR_CODE = "parameters-02";
+    private static final String ERROR_DETAILS = "response.idErrorDetails";
+    private static final String ID_ERROR_MESSAGE = "response.idErrorMessage";
+    private static final String INVALID_SORTING_ORDER = "response.sortingOrderMessage";
+    private static final String NONE = "NONE";
+    private static final String ASC = "ASC";
+    private static final String DESC = "DESC";
 
     private final CertificateDao certificateDao;
 
@@ -48,9 +60,12 @@ public class CertificateService {
      * @return {@link Certificate}
      * @throws CertificateNotFoundException if no certificates with specified id were found
      */
-    public Certificate getById(long id) {
+    public Certificate getById(String id) {
 
-        Optional<Certificate> certificateOptional = certificateDao.getById(id);
+        if (!isIdValid(id)) {
+            throw new ResponseException(new ValidationErrorMessage(ID_ERROR_MESSAGE, id, ERROR_DETAILS));
+        }
+        Optional<Certificate> certificateOptional = certificateDao.getById(Long.parseLong(id.trim()));
         if (!certificateOptional.isPresent()) {
             throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID, id);
         }
@@ -61,15 +76,27 @@ public class CertificateService {
     /**
      * Returns all {@link Certificate} records from data base in some {@link CertificateSortingOrder order}
      *
-     * @param order sorting order
+     * @param sortingOrderString sorting order string to be parsed
      * @return {@link List<Certificate>} sorted according to {@link CertificateSortingOrder order}
      */
-    public List<Certificate> getAll(CertificateSortingOrder order) {
+    public List<Certificate> getAll(String sortingOrderString) {
+        if (!isSortingOrderStringValid(sortingOrderString)) {
+            throw new ResponseException(
+                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, INVALID_SORTING_ORDER)
+            );
+        }
+        CertificateSortingOrder order = getCertificateSortingOrder(sortingOrderString);
         List<Certificate> certificateList = certificateDao.getAll();
         if (certificateList != null) {
             order.sort(certificateList);
         }
         return certificateList;
+    }
+
+    private CertificateSortingOrder getCertificateSortingOrder(String sortingOrderString) {
+        return sortingOrderString != null ?
+                CertificateSortingOrder.valueOf(sortingOrderString.toUpperCase())
+                : CertificateSortingOrder.NONE;
     }
 
     /**
@@ -88,10 +115,16 @@ public class CertificateService {
      * @param namePart name part of {@link Certificate} to return
      * @return {@link List<Certificate>}
      */
-    public List<Certificate> getByNamePartSorted(CertificateSortingOrder sortingOrder, String namePart) {
+    public List<Certificate> getByNamePartSorted(String sortingOrderString, String namePart) {
+        if (!isSortingOrderStringValid(sortingOrderString)) {
+            throw new ResponseException(
+                    new ErrorInfo(HttpStatus.BAD_REQUEST, PARAMETERS_ERROR_CODE, INVALID_SORTING_ORDER)
+            );
+        }
+        CertificateSortingOrder order = getCertificateSortingOrder(sortingOrderString);
         List<Certificate> certificates = certificateDao.getByNamePart(namePart);
         if (certificates != null) {
-            sortingOrder.sort(certificates);
+            order.sort(certificates);
         }
         return certificates;
     }
@@ -107,12 +140,13 @@ public class CertificateService {
 
         validateCertificate(certificate);
 
-        long certificateId = certificate.getId();
+        Long certificateId = certificate.getId();
         if (!certificateDao.getById(certificateId).isPresent()) {
             throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID, certificateId);
         }
         List<Tag> tags = certificate.getTagList();
         if (tags != null) {
+            deleteRedundantTags(tags, certificateId);
             processTags(tags, certificateId);
         }
         certificate.setLastUpdateDate(LocalDateTime.now());
@@ -126,7 +160,11 @@ public class CertificateService {
      * @param
      */
     @Transactional
-    public void delete(long certificateId) {
+    public void delete(String id) {
+        if (!isIdValid(id)) {
+            throw new ResponseException(new ValidationErrorMessage(ID_ERROR_MESSAGE, id, ERROR_DETAILS));
+        }
+        Long certificateId = Long.parseLong(id.trim());
         Optional<Certificate> certificateOptional = certificateDao.getById(certificateId);
         if (!certificateOptional.isPresent()) {
             throw new CertificateNotFoundException(NO_CERTIFICATE_FOUND_BY_THIS_ID, certificateId);
@@ -150,7 +188,7 @@ public class CertificateService {
         certificate.setLastUpdateDate(localDateTime);
 
         List<Tag> tags = certificate.getTagList();
-        long certificateId = certificateDao.create(certificate);
+        Long certificateId = certificateDao.create(certificate);
         if (tags != null) {
             processTags(tags, certificateId);
         }
@@ -163,8 +201,8 @@ public class CertificateService {
         }
     }
 
-    private void processTags(List<Tag> tags, long certificateId) {
-        deleteRedundantTags(tags, certificateId);
+    private void processTags(List<Tag> tags, Long certificateId) {
+
         for (Tag tag : tags) {
             Optional<Tag> tagOptional = tagJdbcDao.getByName(tag.getName());
             Tag checkedTag = getTag(tag.getName(), tagOptional);
@@ -174,12 +212,20 @@ public class CertificateService {
         }
     }
 
-    private void deleteRedundantTags(List<Tag> tags, long certificateId) {
+    private void deleteRedundantTags(List<Tag> tags, Long certificateId) {
         List<Long> idList = new ArrayList<>();
         tags.forEach((Tag tag) -> {
-            idList.add(tag.getId());
+            Long id = tag.getId();
+            if (id != null) {
+                idList.add(id);
+            }
+            ;
         });
-        certificateDao.detachTagsFromCertificateExceptPresented(certificateId, idList.toArray(new Long[0]));
+        if (!idList.isEmpty()) {
+            certificateDao.detachTagsFromCertificateExceptPresented(certificateId, idList.toArray(new Long[0]));
+        } else {
+            certificateDao.detachAllTagsFromCertificate(certificateId);
+        }
     }
 
     private Tag getTag(String tagName, Optional<Tag> tagOptional) {
@@ -189,10 +235,29 @@ public class CertificateService {
             tag = tagOptional.get();
         } else {
             tag = new Tag(tagName);
-            long tagId = tagJdbcDao.create(tag);
+            Long tagId = tagJdbcDao.create(tag);
             tag.setId(tagId);
         }
         return tag;
+    }
+
+    private boolean isIdValid(String id) {
+        return (id != null && NumberUtils.isParsable(id.trim()) && Long.parseLong(id.trim()) >= 0);
+    }
+
+    private boolean isSortingOrderStringValid(String sortingOrderString) {
+        if (sortingOrderString != null) {
+            switch (sortingOrderString.toUpperCase()) {
+                case NONE:
+                case ASC:
+                case DESC:
+                    return true;
+                default:
+                    return false;
+            }
+        } else {
+            return true;
+        }
     }
 
 

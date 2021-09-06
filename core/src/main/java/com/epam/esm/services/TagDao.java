@@ -12,7 +12,7 @@ public interface TagDao {
      * @param entity entity to add
      * @return id field of recently added row
      */
-    long create(Tag entity);
+    Long create(Tag entity);
 
     /**
      * Returns all T entities contained in database
@@ -28,14 +28,14 @@ public interface TagDao {
      * @param id identifier of {@link Tag}
      * @return {@link Optional} of {@link Tag}
      */
-    Optional<Tag> getById(long id);
+    Optional<Tag> getById(Long id);
 
     /**
      * Deletes a record from DB by "id" field
      *
      * @param id identifier of the record
      */
-    void deleteById(long id);
+    void deleteById(Long id);
 
     /**
      * Returns {@link Optional} of {@link Tag} if any record containing name in "name" field was found.
