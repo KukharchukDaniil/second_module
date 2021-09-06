@@ -3,7 +3,6 @@ package com.epam.esm.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,14 +17,14 @@ public class Certificate extends Entity {
     private BigDecimal price;
     private Integer duration;
 
-    private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
+    private String createDate;
+    private String lastUpdateDate;
 
     public Certificate() {
     }
 
     public Certificate(String name, String description, BigDecimal price, Integer duration,
-                       LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+                       String createDate, String lastUpdateDate) {
         super(name);
         this.description = description;
         this.price = price;
@@ -66,21 +65,21 @@ public class Certificate extends Entity {
         this.duration = duration;
     }
 
-    public LocalDateTime getCreateDate() {
+    public String getCreateDate() {
         return createDate;
     }
 
     @JsonIgnore
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
-    public LocalDateTime getLastUpdateDate() {
+    public String getLastUpdateDate() {
         return lastUpdateDate;
     }
 
     @JsonIgnore
-    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+    public void setLastUpdateDate(String lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

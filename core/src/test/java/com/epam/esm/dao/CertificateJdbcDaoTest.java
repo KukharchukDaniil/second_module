@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 public class CertificateJdbcDaoTest {
 
-    private static LocalDateTime date;
+    private static final String DATE = "2021-08-27T01:06:56.817";
     private static final String CERTIFICATE_ONE_NAME = "certificate_one";
     private static final String CERTIFICATE_ONE_DESCRIPTION = "b_description";
     private static final BigDecimal CERTIFICATE_ONE_PRICE = BigDecimal.valueOf(1);
@@ -67,17 +66,16 @@ public class CertificateJdbcDaoTest {
 
     @BeforeAll
     public static void init() {
-        date = LocalDateTime.parse("2021-08-27T01:06:56.817");
 
         freeTag = new Tag(FREE_TAG_ID, FREE_TAG_NAME);
         proTag = new Tag(PRO_TAG_ID, PRO_TAG_NAME);
         advancedTag = new Tag(ADVANCED_TAG_ID, ADVANCED_TAG_NAME);
 
         getByIdExpectedCertificate = new Certificate(CERTIFICATE_ONE_NAME, CERTIFICATE_ONE_DESCRIPTION,
-                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, date, date);
+                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, DATE, DATE);
 
         detachTagCertificate = new Certificate(CERTIFICATE_ONE_NAME, CERTIFICATE_ONE_DESCRIPTION,
-                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, date, date);
+                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, DATE, DATE);
         detachTagCertificate.setTagList(new ArrayList<>());
 
         getByIdExpectedCertificate.setId(CERTIFICATE_ONE_ID);
@@ -85,11 +83,11 @@ public class CertificateJdbcDaoTest {
         getByIdExpectedCertificate.setTagList(tags);
 
         certificate_one = new Certificate(CERTIFICATE_ONE_NAME, CERTIFICATE_ONE_DESCRIPTION,
-                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, date, date);
+                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, DATE, DATE);
         certificateOneTags = new ArrayList<Tag>(Arrays.asList(freeTag, proTag));
 
         createExpected = new Certificate(NAME, DESCRIPTION,
-                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, date, date);
+                CERTIFICATE_ONE_PRICE, CERTIFICATE_ONE_DURATION, DATE, DATE);
     }
 
     @BeforeEach

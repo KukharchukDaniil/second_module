@@ -149,7 +149,7 @@ public class CertificateService {
             deleteRedundantTags(tags, certificateId);
             processTags(tags, certificateId);
         }
-        certificate.setLastUpdateDate(LocalDateTime.now());
+        certificate.setLastUpdateDate(LocalDateTime.now().toString());
         certificateDao.update(certificate);
         return getById(certificate.getId().toString());
     }
@@ -183,7 +183,7 @@ public class CertificateService {
 
         validateCertificate(certificate);
 
-        LocalDateTime localDateTime = LocalDateTime.now();
+        String localDateTime = LocalDateTime.now().toString();
 
         certificate.setCreateDate(localDateTime);
         certificate.setLastUpdateDate(localDateTime);

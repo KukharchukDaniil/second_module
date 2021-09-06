@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 /**
  * Maps {@link Certificate} from current row in {@link ResultSet}
@@ -33,12 +32,11 @@ public class CertificateRowMapper implements RowMapper<Certificate> {
         certificate.setDuration(resultSet.getInt(DURATION));
 
         String dateString = resultSet.getString(CREATE_DATE);
-        LocalDateTime localDateTime = dateString == null ? null : LocalDateTime.parse(dateString);
+        String localDateTime = dateString;
         certificate.setCreateDate(localDateTime);
 
         dateString = resultSet.getString(LAST_UPDATE_DATE);
-        localDateTime = dateString == null ? null : LocalDateTime.parse(dateString);
-        certificate.setLastUpdateDate(localDateTime);
+        certificate.setLastUpdateDate(dateString);
         return certificate;
     }
 }

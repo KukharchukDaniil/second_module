@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,15 +95,14 @@ public class CertificateJdbcDao implements CertificateDao {
 
     @Override
     public Certificate update(Certificate entity) {
-        LocalDateTime createDate = entity.getCreateDate();
-        LocalDateTime lastUpdateDate = entity.getLastUpdateDate();
+
         jdbcTemplate.update(UPDATE_CERTIFICATE,
                 entity.getName(),
                 entity.getDescription(),
                 entity.getPrice(),
                 entity.getDuration(),
-                createDate != null ? createDate.toString() : null,
-                lastUpdateDate != null ? lastUpdateDate.toString() : null,
+                entity.getCreateDate(),
+                entity.getLastUpdateDate(),
                 entity.getId());
         return getById(entity.getId()).get();
     }

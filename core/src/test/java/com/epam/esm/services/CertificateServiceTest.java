@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceTest {
 
-    private static LocalDateTime date;
+    private static final String DATE = "2021-08-27T01:06:56.817";
     private static final String ID_STRING = "1";
     private static final Long ID = 1L;
     private static final String C_NAME = "c_name";
@@ -50,13 +49,11 @@ class CertificateServiceTest {
 
     @BeforeAll
     public static void initClass() {
-        date = LocalDateTime.now();
-
-        thirdCertificate = new Certificate(C_NAME, DESCRIPTION, PRICE, DURATION, date, date);
+        thirdCertificate = new Certificate(C_NAME, DESCRIPTION, PRICE, DURATION, DATE, DATE);
         thirdCertificate.setId(ID);
-        secondCertificate = new Certificate(B_NAME, DESCRIPTION, PRICE, DURATION, date, date);
+        secondCertificate = new Certificate(B_NAME, DESCRIPTION, PRICE, DURATION, DATE, DATE);
         secondCertificate.setId(ID);
-        firstCertificate = new Certificate(A_NAME, DESCRIPTION, PRICE, DURATION, date, date);
+        firstCertificate = new Certificate(A_NAME, DESCRIPTION, PRICE, DURATION, DATE, DATE);
         firstCertificate.setId(ID);
         certificateList = Arrays.asList(firstCertificate, secondCertificate, thirdCertificate);
     }
