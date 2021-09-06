@@ -106,7 +106,7 @@ public class CertificateJdbcDao implements CertificateDao {
                 createDate != null ? createDate.toString() : null,
                 lastUpdateDate != null ? lastUpdateDate.toString() : null,
                 entity.getId());
-        return entity;
+        return getById(entity.getId()).get();
     }
 
     @Override
