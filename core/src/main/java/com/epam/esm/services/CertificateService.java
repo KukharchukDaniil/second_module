@@ -136,7 +136,7 @@ public class CertificateService {
      * @param certificate {@link Certificate} object that needs to be updated
      */
     @Transactional
-    public void update(Certificate certificate) {
+    public Certificate update(Certificate certificate) {
 
         validateCertificate(certificate);
 
@@ -151,6 +151,7 @@ public class CertificateService {
         }
         certificate.setLastUpdateDate(LocalDateTime.now());
         certificateDao.update(certificate);
+        return getById(certificate.getId().toString());
     }
 
     /**
